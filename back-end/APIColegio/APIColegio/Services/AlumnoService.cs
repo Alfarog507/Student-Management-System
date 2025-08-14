@@ -47,17 +47,24 @@ namespace APIColegio.Services
             }
         }
 
-        public async Task<IEnumerable<AlumnoResponseDto>> GetAllAlumnosAsync()
+        public async Task<IEnumerable<AlumnoResponseDto>> GetAllAlumnosAsync(string orderBy = "id")
         {
             try
             {
-                _logger.LogInformation("Obteniendo todos los alumnos");
+                _logger.LogInformation("Obteniendo todos los alumnos con ordenamiento: {OrderBy}", orderBy);
 
-                var alumnos = await _context.Alumnos
-                    .OrderBy(a => a.Grado)
-                    .ThenBy(a => a.Seccion)
-                    .ThenBy(a => a.NombreAlumno)
-                    .ToListAsync();
+                var query = _context.Alumnos.AsQueryable();
+
+                // Aplicar ordenamiento según el parámetro
+                query = orderBy.ToLower() switch
+                {
+                    "id" => query.OrderBy(a => a.Id),
+                    "nombre" => query.OrderBy(a => a.NombreAlumno),
+                    "grado" => query.OrderBy(a => a.Grado).ThenBy(a => a.Seccion).ThenBy(a => a.NombreAlumno),
+                    _ => throw new ArgumentException($"Campo de ordenamiento no válido: {orderBy}. Valores permitidos: id, nombre, grado")
+                };
+
+                var alumnos = await query.ToListAsync();
 
                 _logger.LogInformation("Se encontraron {Count} alumnos", alumnos.Count);
 

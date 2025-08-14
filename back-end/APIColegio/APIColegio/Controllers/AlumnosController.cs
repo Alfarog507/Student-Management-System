@@ -1,5 +1,6 @@
 using APIColegio.DTOs;
 using APIColegio.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIColegio.Controllers
@@ -7,6 +8,7 @@ namespace APIColegio.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [Authorize] // Proteger todos los endpoints con autenticación
     public class AlumnosController : ControllerBase
     {
         private readonly IAlumnoService _alumnoService;
@@ -24,9 +26,11 @@ namespace APIColegio.Controllers
         /// <param name="orderBy">Campo de ordenamiento: id, nombre, grado (default: id)</param>
         /// <returns>Lista de todos los alumnos con información adicional</returns>
         /// <response code="200">Lista de alumnos obtenida exitosamente</response>
+        /// <response code="401">No autorizado - API Key requerida</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<AlumnoResponseDto>>), 200)]
+        [ProducesResponseType(typeof(object), 401)]
         [ProducesResponseType(typeof(ApiErrorResponse), 500)]
         public async Task<ActionResult<ApiResponse<IEnumerable<AlumnoResponseDto>>>> GetAllAlumnos(
             [FromQuery] string orderBy = "id")
@@ -77,11 +81,13 @@ namespace APIColegio.Controllers
         /// <returns>Lista de alumnos del grado especificado</returns>
         /// <response code="200">Alumnos del grado obtenidos exitosamente</response>
         /// <response code="400">Grado inválido o no especificado</response>
+        /// <response code="401">No autorizado - API Key requerida</response>
         /// <response code="404">No se encontraron alumnos en el grado especificado</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpGet("grado/{grado}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<AlumnoResponseDto>>), 200)]
         [ProducesResponseType(typeof(ApiErrorResponse), 400)]
+        [ProducesResponseType(typeof(object), 401)]
         [ProducesResponseType(typeof(ApiErrorResponse), 404)]
         [ProducesResponseType(typeof(ApiErrorResponse), 500)]
         public async Task<ActionResult<ApiResponse<IEnumerable<AlumnoResponseDto>>>> GetAlumnosByGrado(string grado)
@@ -143,11 +149,13 @@ namespace APIColegio.Controllers
         /// <returns>Alumno encontrado</returns>
         /// <response code="200">Alumno encontrado exitosamente</response>
         /// <response code="400">ID inválido</response>
+        /// <response code="401">No autorizado - API Key requerida</response>
         /// <response code="404">Alumno no encontrado</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(ApiResponse<AlumnoResponseDto>), 200)]
         [ProducesResponseType(typeof(ApiErrorResponse), 400)]
+        [ProducesResponseType(typeof(object), 401)]
         [ProducesResponseType(typeof(ApiErrorResponse), 404)]
         [ProducesResponseType(typeof(ApiErrorResponse), 500)]
         public async Task<ActionResult<ApiResponse<AlumnoResponseDto>>> GetAlumnoById(int id)
@@ -208,11 +216,13 @@ namespace APIColegio.Controllers
         /// <returns>Alumno creado</returns>
         /// <response code="201">Alumno creado exitosamente</response>
         /// <response code="400">Datos de entrada inválidos</response>
+        /// <response code="401">No autorizado - API Key requerida</response>
         /// <response code="409">Conflicto - Alumno ya existe</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<AlumnoResponseDto>), 201)]
         [ProducesResponseType(typeof(ApiErrorResponse), 400)]
+        [ProducesResponseType(typeof(object), 401)]
         [ProducesResponseType(typeof(ApiErrorResponse), 409)]
         [ProducesResponseType(typeof(ApiErrorResponse), 500)]
         public async Task<ActionResult<ApiResponse<AlumnoResponseDto>>> CreateAlumno([FromBody] AlumnoCreateDto alumnoDto)
