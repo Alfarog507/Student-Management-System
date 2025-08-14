@@ -1,16 +1,18 @@
 export interface Alumno {
-  id?: number;
-  nombre: string;
+  id: number;
+  nombreAlumno: string;
   fechaNacimiento: string;
   nombrePadre: string;
   nombreMadre: string;
   grado: string;
   seccion: string;
   fechaIngreso: string;
+  edad: number;
+  gradoCompleto: string;
 }
 
 export interface CreateAlumnoDto {
-  nombre: string;
+  nombreAlumno: string;
   fechaNacimiento: string;
   nombrePadre: string;
   nombreMadre: string;
@@ -20,7 +22,9 @@ export interface CreateAlumnoDto {
 }
 
 export interface ApiResponse<T> {
-  data: T;
   success: boolean;
-  message?: string;
+  data: T;
+  message: string;
+  count: number;
+  timestamp: string;
 }

@@ -1,33 +1,44 @@
 import { useState } from "react";
 import Navbar from "./components/Navbar";
-import LoadingSpinner from "./components/LoadingSpinner";
 import AlumnosList from "./components/AlumnosList";
+import AlumnoForm from "./components/AlumnoForm";
 import "./App.css";
 
 function App() {
   const [vistaActual, setVistaActual] = useState<"lista" | "formulario">(
     "lista"
   );
+  const [shouldRefreshList, setShouldRefreshList] = useState<number>(0);
+
+  const handleNuevoAlumno = () => {
+    setVistaActual("formulario");
+  };
+
+  const handleFormSuccess = () => {
+    setVistaActual("lista");
+    setShouldRefreshList((prev) => prev + 1); // Trigger refresh
+  };
+
+  const handleFormCancel = () => {
+    setVistaActual("lista");
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar vistaActual={vistaActual} onCambiarVista={setVistaActual} />
+      <Navbar
+        vistaActual={vistaActual}
+        onCambiarVista={setVistaActual}
+        onNuevoAlumno={handleNuevoAlumno}
+      />
 
       <div className="container mx-auto p-6">
         {vistaActual === "lista" ? (
-          <AlumnosList />
+          <AlumnosList key={shouldRefreshList} />
         ) : (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
-              ➕ Agregar Nuevo Alumno
-            </h2>
-            <div className="text-center py-8">
-              <LoadingSpinner message="Próximamente: Formulario de alumnos" />
-              <p className="text-gray-600 mt-4">
-                El formulario se implementará en el siguiente commit
-              </p>
-            </div>
-          </div>
+          <AlumnoForm
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
         )}
       </div>
     </div>

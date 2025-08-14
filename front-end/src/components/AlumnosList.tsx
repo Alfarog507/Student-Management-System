@@ -1,15 +1,25 @@
 import { useState, useEffect } from "react";
 import type { Alumno } from "../types/alumno";
 import { alumnosService } from "../services/api";
-import { CONFIG, formatDate } from "../config/constants";
+import { formatDate } from "../config/constants";
 import LoadingSpinner from "./LoadingSpinner";
 import Alert from "./Alert";
 
 const AlumnosList = () => {
   const [alumnos, setAlumnos] = useState<Alumno[]>([]);
+  const [gradosDisponibles, setGradosDisponibles] = useState<string[]>([]);
   const [filtroGrado, setFiltroGrado] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+
+  const cargarGrados = async () => {
+    try {
+      const grados = await alumnosService.getGrados();
+      setGradosDisponibles(grados);
+    } catch (err) {
+      console.error("Error al cargar grados:", err);
+    }
+  };
 
   const cargarAlumnos = async () => {
     setLoading(true);
@@ -30,26 +40,12 @@ const AlumnosList = () => {
   };
 
   useEffect(() => {
+    cargarGrados();
+  }, []);
+
+  useEffect(() => {
     cargarAlumnos();
   }, [filtroGrado]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleEliminarAlumno = async (id: number, nombre: string) => {
-    if (
-      window.confirm(
-        `¿Estás seguro de que deseas eliminar al alumno ${nombre}?`
-      )
-    ) {
-      try {
-        await alumnosService.deleteAlumno(id);
-        setAlumnos(alumnos.filter((alumno) => alumno.id !== id));
-        alert("Alumno eliminado exitosamente");
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Error al eliminar el alumno"
-        );
-      }
-    }
-  };
 
   if (loading) {
     return <LoadingSpinner message="Cargando lista de alumnos..." />;
@@ -88,9 +84,9 @@ const AlumnosList = () => {
           className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">Todos los grados</option>
-          {CONFIG.GRADOS.map((grado) => (
-            <option key={grado.value} value={grado.value}>
-              {grado.label}
+          {gradosDisponibles.map((grado) => (
+            <option key={grado} value={grado}>
+              {grado}
             </option>
           ))}
         </select>
@@ -123,7 +119,7 @@ const AlumnosList = () => {
                 Fecha Ingreso
               </th>
               <th className="border border-gray-300 px-4 py-3 text-left font-semibold">
-                Acciones
+                Edad
               </th>
             </tr>
           </thead>
@@ -135,10 +131,7 @@ const AlumnosList = () => {
                   className="border border-gray-300 px-4 py-8 text-center text-gray-500"
                 >
                   {filtroGrado
-                    ? `No se encontraron alumnos en el ${
-                        CONFIG.GRADOS.find((g) => g.value === filtroGrado)
-                          ?.label || "grado seleccionado"
-                      }`
+                    ? `No se encontraron alumnos en el grado ${filtroGrado}`
                     : "No hay alumnos registrados"}
                 </td>
               </tr>
@@ -149,7 +142,7 @@ const AlumnosList = () => {
                   className="hover:bg-gray-50 transition-colors"
                 >
                   <td className="border border-gray-300 px-4 py-3 font-medium">
-                    {alumno.nombre}
+                    {alumno.nombreAlumno}
                   </td>
                   <td className="border border-gray-300 px-4 py-3">
                     {formatDate(alumno.fechaNacimiento)}
@@ -162,8 +155,7 @@ const AlumnosList = () => {
                   </td>
                   <td className="border border-gray-300 px-4 py-3">
                     <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                      {CONFIG.GRADOS.find((g) => g.value === alumno.grado)
-                        ?.label || alumno.grado}
+                      {alumno.grado}
                     </span>
                   </td>
                   <td className="border border-gray-300 px-4 py-3">
@@ -175,16 +167,9 @@ const AlumnosList = () => {
                     {formatDate(alumno.fechaIngreso)}
                   </td>
                   <td className="border border-gray-300 px-4 py-3">
-                    <button
-                      onClick={() =>
-                        alumno.id &&
-                        handleEliminarAlumno(alumno.id, alumno.nombre)
-                      }
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm transition-colors"
-                      title={`Eliminar a ${alumno.nombre}`}
-                    >
-                      🗑️ Eliminar
-                    </button>
+                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm">
+                      {alumno.edad} años
+                    </span>
                   </td>
                 </tr>
               ))
@@ -199,12 +184,7 @@ const AlumnosList = () => {
           <p className="text-sm text-gray-600">
             <span className="font-semibold">Total de alumnos mostrados:</span>{" "}
             {alumnos.length}
-            {filtroGrado && (
-              <span>
-                {" "}
-                en {CONFIG.GRADOS.find((g) => g.value === filtroGrado)?.label}
-              </span>
-            )}
+            {filtroGrado && <span> en grado {filtroGrado}</span>}
           </p>
         </div>
       )}

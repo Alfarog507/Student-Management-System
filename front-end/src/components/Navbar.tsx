@@ -3,9 +3,14 @@ import React from "react";
 interface NavbarProps {
   vistaActual: "lista" | "formulario";
   onCambiarVista: (vista: "lista" | "formulario") => void;
+  onNuevoAlumno?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ vistaActual, onCambiarVista }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  vistaActual,
+  onCambiarVista,
+  onNuevoAlumno,
+}) => {
   return (
     <nav className="bg-blue-600 text-white p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
@@ -22,7 +27,9 @@ const Navbar: React.FC<NavbarProps> = ({ vistaActual, onCambiarVista }) => {
             📋 Ver Lista
           </button>
           <button
-            onClick={() => onCambiarVista("formulario")}
+            onClick={() =>
+              onNuevoAlumno ? onNuevoAlumno() : onCambiarVista("formulario")
+            }
             className={`px-4 py-2 rounded-lg transition-colors duration-200 ${
               vistaActual === "formulario"
                 ? "bg-blue-800 shadow-lg"

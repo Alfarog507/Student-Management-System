@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Alumno, CreateAlumnoDto } from "../types/alumno";
+import type { Alumno, CreateAlumnoDto, ApiResponse } from "../types/alumno";
 import { CONFIG } from "../config/constants";
 
 const API_BASE_URL = CONFIG.API_BASE_URL;
@@ -10,7 +10,7 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${API_TOKEN}`, // Autenticación con Bearer token
+    "X-API-Key": API_TOKEN, // Autenticación con X-API-Key token
   },
 });
 
@@ -42,8 +42,10 @@ export const alumnosService = {
   // Obtener todos los alumnos
   getAlumnos: async (): Promise<Alumno[]> => {
     try {
-      const response = await apiClient.get("/alumnos");
-      return response.data;
+      const response = await apiClient.get<ApiResponse<Alumno[]>>(
+        "/Alumnos?orderBy=id"
+      );
+      return response.data.data;
     } catch (error) {
       console.error("Error al obtener alumnos:", error);
       throw error;
@@ -53,10 +55,25 @@ export const alumnosService = {
   // Obtener alumnos por grado
   getAlumnosByGrado: async (grado: string): Promise<Alumno[]> => {
     try {
-      const response = await apiClient.get(`/alumnos/grado/${grado}`);
-      return response.data;
+      const response = await apiClient.get<ApiResponse<Alumno[]>>(
+        `/Alumnos/grado/${grado}`
+      );
+      return response.data.data;
     } catch (error) {
       console.error("Error al obtener alumnos por grado:", error);
+      throw error;
+    }
+  },
+
+  // Obtener alumno por ID
+  getAlumnoById: async (id: number): Promise<Alumno> => {
+    try {
+      const response = await apiClient.get<ApiResponse<Alumno>>(
+        `/Alumnos/${id}`
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("Error al obtener alumno por ID:", error);
       throw error;
     }
   },
@@ -64,34 +81,45 @@ export const alumnosService = {
   // Crear nuevo alumno
   createAlumno: async (alumno: CreateAlumnoDto): Promise<Alumno> => {
     try {
-      const response = await apiClient.post("/alumnos", alumno);
-      return response.data;
+      const response = await apiClient.post<ApiResponse<Alumno>>(
+        "/Alumnos",
+        alumno
+      );
+      return response.data.data;
     } catch (error) {
       console.error("Error al crear alumno:", error);
       throw error;
     }
   },
 
-  // Actualizar alumno
-  updateAlumno: async (
-    id: number,
-    alumno: CreateAlumnoDto
-  ): Promise<Alumno> => {
+  // Obtener grados únicos
+  getGrados: async (): Promise<string[]> => {
     try {
-      const response = await apiClient.put(`/alumnos/${id}`, alumno);
-      return response.data;
+      const response = await apiClient.get<ApiResponse<Alumno[]>>(
+        "/Alumnos?orderBy=id"
+      );
+      const alumnos = response.data.data;
+      const gradosUnicos = [...new Set(alumnos.map((alumno) => alumno.grado))];
+      return gradosUnicos.sort();
     } catch (error) {
-      console.error("Error al actualizar alumno:", error);
+      console.error("Error al obtener grados:", error);
       throw error;
     }
   },
 
-  // Eliminar alumno
-  deleteAlumno: async (id: number): Promise<void> => {
+  // Obtener secciones únicas
+  getSecciones: async (): Promise<string[]> => {
     try {
-      await apiClient.delete(`/alumnos/${id}`);
+      const response = await apiClient.get<ApiResponse<Alumno[]>>(
+        "/Alumnos?orderBy=id"
+      );
+      const alumnos = response.data.data;
+      const seccionesUnicas = [
+        ...new Set(alumnos.map((alumno) => alumno.seccion)),
+      ];
+      return seccionesUnicas.sort();
     } catch (error) {
-      console.error("Error al eliminar alumno:", error);
+      console.error("Error al obtener secciones:", error);
       throw error;
     }
   },

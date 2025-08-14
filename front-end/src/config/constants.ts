@@ -2,7 +2,7 @@
 export const CONFIG = {
   API_BASE_URL:
     import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api",
-  API_TOKEN: import.meta.env.VITE_API_TOKEN || "",
+  API_TOKEN: import.meta.env.VITE_API_TOKEN || "colegio-api-key-2025",
 };
 
 // Utilidades para formateo de fechas
