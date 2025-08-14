@@ -5,7 +5,7 @@ API RESTful completa para la gestión de alumnos de un colegio desarrollada con 
 [![.NET 8](https://img.shields.io/badge/.NET-8-purple.svg)](https://dotnet.microsoft.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![Swagger](https://img.shields.io/badge/API-Documented-green.svg)](http://localhost:5000/swagger)
+[![Swagger](https://img.shields.io/badge/API-Documented-green.svg)](http://localhost:8080/swagger)
 
 ---
 
@@ -15,231 +15,118 @@ API RESTful completa para la gestión de alumnos de un colegio desarrollada con 
 - ✅ **Base de datos PostgreSQL** con Entity Framework Core
 - ✅ **Autenticación API Key** para seguridad
 - ✅ **Documentación automática** con Swagger/OpenAPI
-- ✅ **Docker Support** para desarrollo local
+- ✅ **Docker Support** completo para desarrollo y producción
 - ✅ **Migraciones automáticas** de base de datos
 - ✅ **Respuestas estructuradas** con metadatos
 - ✅ **Validaciones de negocio** automáticas
-- ✅ **Logging detallado** para debugging
 - ✅ **Health checks** para monitoreo
+- ✅ **CORS configurado** para frontend React
 
 ---
 
-## 📋 Requisitos del Sistema
+## 🐳 Inicio Rápido con Docker (Recomendado)
 
-### Software Necesario
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) (recomendado)
-- [PostgreSQL 15+](https://www.postgresql.org/download/) (alternativo)
-- [Entity Framework Tools](https://docs.microsoft.com/en-us/ef/core/cli/dotnet)
-
-### Hardware Mínimo
-- RAM: 4GB
-- Disco: 2GB disponibles
-- CPU: Dual-core 2GHz
-
----
-
-## 🛠️ Configuración e Instalación
-
-### 🎯 Método 1: Configuración Automática (Recomendado)
+### ⚡ Método 1: Script Automático
 
 **Windows:**
 ```bash
-# Ejecutar script de configuración completa
-./setup-database.bat
+# Ejecutar configuración completa
+./docker-setup.bat
 ```
 
 **Linux/macOS:**
 ```bash
 # Dar permisos y ejecutar
-chmod +x setup-database.sh
-./setup-database.sh
+chmod +x docker-setup.sh
+./docker-setup.sh
 ```
 
-### 🔧 Método 2: Configuración Manual
+### 🔧 Método 2: Docker Compose Manual
 
-#### Paso 1: Clonar y Preparar
 ```bash
-# Clonar el repositorio
+# Construir e iniciar todos los servicios
+docker-compose up -d --build
+
+# Verificar estado
+docker-compose ps
+
+# Ver logs
+docker-compose logs -f api
+```
+
+### 🌐 Servicios Disponibles
+
+| Servicio | Puerto | URL | Descripción |
+|----------|--------|-----|-------------|
+| **API** | 8080 | http://localhost:8080/swagger | Documentación Swagger |
+| **PostgreSQL** | 5432 | - | Base de datos |
+| **Adminer** | 8081 | http://localhost:8081 | Admin web de BD |
+
+---
+
+## 💻 Desarrollo Local (Sin Docker)
+
+### 📋 Requisitos
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [PostgreSQL 15+](https://www.postgresql.org/download/)
+- [Entity Framework Tools](https://docs.microsoft.com/en-us/ef/core/cli/dotnet)
+
+### 🛠️ Configuración Manual
+
+```bash
+# 1. Clonar y preparar
 git clone https://github.com/tu-usuario/api-colegio.git
 cd api-colegio/back-end/APIColegio
-
-# Restaurar dependencias
 dotnet restore
-```
 
-#### Paso 2: Base de Datos con Docker
-```bash
-# Iniciar PostgreSQL
-docker-compose up -d
+# 2. Configurar PostgreSQL local
+# Crear base de datos: colegiodb
+# Usuario: postgres, Password: admin
 
-# Verificar que está ejecutándose
-docker ps
-```
-
-#### Paso 3: Configurar Entity Framework
-```bash
-# Instalar herramientas EF (si no están instaladas)
-dotnet tool install --global dotnet-ef
-
-# Crear migración inicial
-dotnet ef migrations add InitialCreate
-
-# Aplicar migraciones
+# 3. Aplicar migraciones
 dotnet ef database update
-```
 
-#### Paso 4: Ejecutar la Aplicación
-```bash
-# Ejecutar en modo desarrollo
+# 4. Ejecutar aplicación
 dotnet run
-
-# O compilar y ejecutar
-dotnet build
-dotnet run --no-build
 ```
 
 ---
 
-## 🐳 Docker y Contenedores
+## 🔑 Autenticación
 
-### PostgreSQL con Docker Compose
-```yaml
-# docker-compose.yml
-services:
-  postgres:
-    image: postgres:15
-    container_name: colegio_postgres
-    environment:
-      POSTGRES_DB: colegiodb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-```
-
-### Comandos Útiles de Docker
-```bash
-# Iniciar servicios
-docker-compose up -d
-
-# Ver logs en tiempo real
-docker-compose logs -f postgres
-
-# Conectarse a PostgreSQL
-docker exec -it colegio_postgres psql -U postgres -d colegiodb
-
-# Detener servicios
-docker-compose down
-
-# Limpiar volúmenes (elimina datos)
-docker-compose down -v
-```
-
----
-
-## 🔧 Configuración Detallada
-
-### Variables de Entorno (.env)
-```env
-# Base de datos
-DATABASE_URL=Host=localhost;Database=colegiodb;Username=postgres;Password=admin;Port=5432
-
-# Autenticación
-API_KEY=colegio-api-key-2024
-
-# Entorno
-ASPNETCORE_ENVIRONMENT=Development
-ASPNETCORE_URLS=http://localhost:5000
-```
-
-### Configuración appsettings.json
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning",
-      "Microsoft.EntityFrameworkCore.Database.Command": "None"
-    }
-  },
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=colegiodb;Username=postgres;Password=admin;Port=5432"
-  },
-  "ApiKey": "colegio-api-key-2024",
-  "AllowedHosts": "*"
-}
-```
-
----
-
-## 📚 Documentación de la API
-
-### 🌐 Acceso a la Documentación
-Una vez ejecutándose la aplicación:
-
-- **📖 Swagger UI:** http://localhost:5000/swagger
-- **🔗 OpenAPI JSON:** http://localhost:5000/swagger/v1/swagger.json
-- **🌐 API Base URL:** http://localhost:5000/api
-- **🏥 Health Check:** http://localhost:5000/api/health
-
-### 🔑 Autenticación
-
-La API utiliza autenticación por **API Key**. Incluye este header en todas las peticiones:
+La API utiliza autenticación por **API Key**:
 
 ```http
 X-API-Key: colegio-api-key-2024
 ```
 
-#### Configurar en Swagger UI:
-1. 🔓 Haz clic en **"Authorize"**
-2. 🔑 Ingresa: `colegio-api-key-2024`
-3. ✅ Haz clic en **"Authorize"**
-4. 🚀 ¡Ya puedes probar todos los endpoints!
+### 🔓 Configurar en Swagger UI:
+1. Ve a http://localhost:8080/swagger
+2. Haz clic en **"Authorize"** 🔓
+3. Ingresa: `colegio-api-key-2024`
+4. Haz clic en **"Authorize"**
+5. ¡Ya puedes probar todos los endpoints! 🚀
 
 ---
 
-## 📊 Modelo de Datos
+## 🎯 Endpoints Principales
 
-### 📋 Tabla: alumnos
+### 👥 Gestión de Alumnos (🔒 Requiere API Key)
 
-| Campo | Tipo | Longitud | Descripción | Ejemplo |
-|-------|------|----------|-------------|---------|
-| **id** | `int` | - | Clave primaria (auto-incremento) | `1` |
-| **nombre_alumno** | `varchar` | 100 | Nombre completo del alumno | `"Juan Pérez García"` |
-| **fecha_nacimiento** | `date` | - | Fecha de nacimiento | `"2010-05-15"` |
-| **nombre_padre** | `varchar` | 100 | Nombre completo del padre | `"Carlos Pérez López"` |
-| **nombre_madre** | `varchar` | 100 | Nombre completo de la madre | `"María García Hernández"` |
-| **grado** | `varchar` | 20 | Grado académico | `"5to"`, `"6to"`, `"1ro"` |
-| **seccion** | `varchar` | 10 | Sección del grado | `"A"`, `"B"`, `"C"` |
-| **fecha_ingreso** | `date` | - | Fecha de ingreso al colegio | `"2021-02-01"` |
-
-### 🔍 Índices de Base de Datos
-- `idx_alumnos_grado` - Optimiza consultas por grado
-- `idx_alumnos_seccion` - Optimiza consultas por sección
-
----
-
-## 🎯 Endpoints Disponibles
-
-### 👥 Gestión de Alumnos (🔒 Requiere Autenticación)
-
-| Método | Endpoint | Descripción | Auth |
-|--------|----------|-------------|------|
-| `GET` | `/api/alumnos` | Obtener todos los alumnos | 🔒 |
-| `GET` | `/api/alumnos/{id}` | Obtener alumno por ID | 🔒 |
-| `GET` | `/api/alumnos/grado/{grado}` | Obtener alumnos por grado | 🔒 |
-| `POST` | `/api/alumnos` | Crear nuevo alumno | 🔒 |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/alumnos` | Obtener todos los alumnos |
+| `GET` | `/api/alumnos/{id}` | Obtener alumno por ID |
+| `GET` | `/api/alumnos/grado/{grado}` | Obtener alumnos por grado |
+| `POST` | `/api/alumnos` | Crear nuevo alumno |
 
 ### 🏥 Health & Monitoreo (🌐 Público)
 
-| Método | Endpoint | Descripción | Auth |
-|--------|----------|-------------|------|
-| `GET` | `/api/health` | Estado de la API | 🌐 |
-| `GET` | `/api/health/info` | Información de la API | 🌐 |
-| `GET` | `/api/health/detailed` | Health check detallado | 🌐 |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Estado básico de la API |
+| `GET` | `/api/health/info` | Información de la API |
+| `GET` | `/api/health/detailed` | Health check detallado |
 
 ---
 
@@ -248,46 +135,15 @@ X-API-Key: colegio-api-key-2024
 ### 🔍 Consultar Todos los Alumnos
 
 ```bash
-curl -X GET "http://localhost:5000/api/alumnos" \
+curl -X GET "http://localhost:8080/api/alumnos" \
   -H "X-API-Key: colegio-api-key-2024" \
   -H "Accept: application/json"
-```
-
-**Respuesta:**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "nombreAlumno": "Juan Pérez García",
-      "fechaNacimiento": "2010-05-15",
-      "nombrePadre": "Carlos Pérez López",
-      "nombreMadre": "María García Hernández",
-      "grado": "5to",
-      "seccion": "A",
-      "fechaIngreso": "2021-02-01",
-      "edad": 13,
-      "gradoCompleto": "5to A"
-    }
-  ],
-  "message": "Alumnos obtenidos exitosamente",
-  "count": 1,
-  "timestamp": "2024-01-15T10:30:00Z"
-}
-```
-
-### 📊 Consultar por Grado
-
-```bash
-curl -X GET "http://localhost:5000/api/alumnos/grado/5to" \
-  -H "X-API-Key: colegio-api-key-2024"
 ```
 
 ### 🆕 Crear Nuevo Alumno
 
 ```bash
-curl -X POST "http://localhost:5000/api/alumnos" \
+curl -X POST "http://localhost:8080/api/alumnos" \
   -H "X-API-Key: colegio-api-key-2024" \
   -H "Content-Type: application/json" \
   -d '{
@@ -304,208 +160,236 @@ curl -X POST "http://localhost:5000/api/alumnos" \
 ### 🏥 Health Check
 
 ```bash
-curl -X GET "http://localhost:5000/api/health"
-```
-
-**Respuesta:**
-```json
-{
-  "status": "Healthy",
-  "message": "API Colegio funcionando correctamente",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "version": "1.0.0",
-  "environment": "Development",
-  "uptime": 3600
-}
+curl -X GET "http://localhost:8080/api/health"
 ```
 
 ---
 
 ## 🧪 Datos de Prueba
 
-La aplicación incluye **3 alumnos precargados** automáticamente:
+La aplicación incluye **3 alumnos precargados**:
 
-| ID | Alumno | Grado | Sección | Padre | Madre |
-|----|--------|-------|---------|-------|-------|
-| 1 | Juan Pérez García | 5to | A | Carlos Pérez López | María García Hernández |
-| 2 | Ana López Martínez | 6to | B | Roberto López Silva | Carmen Martínez Rodríguez |
-| 3 | Luis Fernández Ruiz | 4to | A | José Fernández Castro | Laura Ruiz Morales |
+| ID | Alumno | Grado | Sección |
+|----|--------|-------|---------|
+| 1 | Juan Pérez García | 5to | A |
+| 2 | Ana López Martínez | 6to | B |
+| 3 | Luis Fernández Ruiz | 4to | A |
 
 ---
 
-## 📝 Comandos Útiles
+## 🐳 Comandos Docker Útiles
 
-### Entity Framework
+### Gestión de Servicios
 ```bash
-# Ver estado de migraciones
-dotnet ef migrations list
+# Iniciar servicios
+docker-compose up -d
 
-# Crear nueva migración
-dotnet ef migrations add NombreMigracion
+# Ver estado
+docker-compose ps
 
-# Aplicar migraciones
-dotnet ef database update
+# Ver logs en tiempo real
+docker-compose logs -f api
+docker-compose logs -f postgres
 
-# Revertir a migración específica
-dotnet ef database update NombreMigracionAnterior
+# Detener servicios
+docker-compose down
 
-# Generar script SQL
-dotnet ef migrations script
-
-# Eliminar última migración (sin aplicar)
-dotnet ef migrations remove
-
-# Regenerar base de datos (desarrollo)
-dotnet ef database drop --force
-dotnet ef database update
+# Reconstruir solo la API
+docker-compose build api --no-cache
+docker-compose up -d api
 ```
 
-### Desarrollo
+### Desarrollo y Debug
 ```bash
-# Ejecutar en modo watch (auto-reload)
-dotnet watch run
+# Entrar al contenedor de la API
+docker exec -it colegio_api bash
 
-# Compilar en modo Release
-dotnet build -c Release
+# Entrar a PostgreSQL
+docker exec -it colegio_postgres psql -U postgres -d colegiodb
 
-# Ejecutar tests (cuando estén implementados)
-dotnet test
+# Backup de base de datos
+docker exec colegio_postgres pg_dump -U postgres colegiodb > backup.sql
 
-# Limpiar build
-dotnet clean
-
-# Verificar formato de código
-dotnet format --verify-no-changes
+# Limpiar todo y empezar de nuevo
+docker-compose down --volumes
+docker-compose up -d --build
 ```
 
 ---
 
-## 🚨 Códigos de Estado HTTP
+## 🌐 Integración con Frontend
 
-### Respuestas Exitosas
-- **200 OK** - Operación exitosa
-- **201 Created** - Recurso creado exitosamente
+### CORS Configurado
+La API ya tiene CORS configurado para desarrollo frontend:
 
-### Errores del Cliente
-- **400 Bad Request** - Datos inválidos o faltantes
-- **401 Unauthorized** - API Key faltante o inválida
-- **404 Not Found** - Recurso no encontrado
-- **409 Conflict** - Conflicto de datos (ej: alumno duplicado)
+```csharp
+// Orígenes permitidos
+"http://localhost:3000"  // React (Create React App)
+"http://localhost:5173"  // Vite
+"http://localhost:8080"  // Docker
+```
 
-### Errores del Servidor
-- **500 Internal Server Error** - Error interno del servidor
+### Variables de Entorno para Frontend
+
+```env
+# .env para frontend React
+REACT_APP_API_URL=http://localhost:8080/api
+REACT_APP_API_KEY=colegio-api-key-2024
+```
+
+### Ejemplo de Fetch en React
+
+```javascript
+// services/api.js
+const API_URL = process.env.REACT_APP_API_URL;
+const API_KEY = process.env.REACT_APP_API_KEY;
+
+export const getAlumnos = async () => {
+  const response = await fetch(`${API_URL}/alumnos`, {
+    headers: {
+      'X-API-Key': API_KEY,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.json();
+};
+```
+
+---
+
+## 📊 Modelo de Datos
+
+### 📋 Tabla: alumnos
+
+| Campo | Tipo | Descripción | Ejemplo |
+|-------|------|-------------|---------|
+| **id** | `int` | Clave primaria | `1` |
+| **nombre_alumno** | `varchar(100)` | Nombre completo | `"Juan Pérez García"` |
+| **fecha_nacimiento** | `date` | Fecha de nacimiento | `"2010-05-15"` |
+| **nombre_padre** | `varchar(100)` | Nombre del padre | `"Carlos Pérez López"` |
+| **nombre_madre** | `varchar(100)` | Nombre de la madre | `"María García Hernández"` |
+| **grado** | `varchar(20)` | Grado académico | `"5to"`, `"6to"` |
+| **seccion** | `varchar(10)` | Sección | `"A"`, `"B"`, `"C"` |
+| **fecha_ingreso** | `date` | Fecha de ingreso | `"2021-02-01"` |
 
 ---
 
 ## 🛠️ Solución de Problemas
 
-### 🐛 Problemas Comunes
+### 🐳 Problemas con Docker
 
-#### 1. Error de Conexión a PostgreSQL
 ```bash
-# Verificar que Docker esté ejecutándose
-docker ps
+# API no responde
+docker-compose logs api
 
-# Reiniciar PostgreSQL
+# PostgreSQL no inicia
+docker-compose logs postgres
 docker-compose restart postgres
 
-# Ver logs de PostgreSQL
-docker-compose logs postgres
+# Problemas de red entre contenedores
+docker exec colegio_api ping postgres
+
+# Puerto ocupado
+# Cambiar puertos en docker-compose.yml
 ```
 
-#### 2. Error de Migración
-```bash
-# Eliminar migración problemática
-dotnet ef migrations remove
+### 💾 Problemas de Base de Datos
 
+```bash
 # Recrear base de datos
-dotnet ef database drop --force
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+docker-compose down --volumes
+docker-compose up -d
+
+# Ver datos en PostgreSQL
+docker exec -it colegio_postgres psql -U postgres -d colegiodb
+SELECT * FROM alumnos;
 ```
 
-#### 3. Puerto Ocupado
-```bash
-# Verificar procesos en puerto 5000
-netstat -tulpn | grep 5000
+### 🔧 Desarrollo Local
 
-# Usar puerto alternativo
+```bash
+# Error de migración
+dotnet ef database drop --force
+dotnet ef database update
+
+# Puerto ocupado
 dotnet run --urls http://localhost:5001
 ```
 
-#### 4. API Key Inválida
-- ✅ Verificar header: `X-API-Key: colegio-api-key-2024`
-- ✅ Confirmar configuración en `appsettings.json`
-- ✅ Usar Swagger UI para probar autenticación
+---
+
+## 🚀 Desarrollo Frontend
+
+### ✅ La API está lista para:
+- ✅ **React** con Create React App
+- ✅ **Vue.js** con Vite
+- ✅ **Angular** con CLI
+- ✅ **Svelte** con SvelteKit
+
+### 📋 Siguiente Paso: Frontend React
+
+```bash
+# En otra terminal/directorio
+npx create-react-app colegio-frontend
+cd colegio-frontend
+
+# Configurar variables de entorno
+echo "REACT_APP_API_URL=http://localhost:8080/api" > .env
+echo "REACT_APP_API_KEY=colegio-api-key-2024" >> .env
+
+# Iniciar desarrollo
+npm start
+```
 
 ---
 
-## 🔍 Estado del Proyecto
+## 📄 Documentación Adicional
 
-### ✅ Completado
-- [x] **Configuración base** (.NET 8, PostgreSQL)
-- [x] **Modelo de datos** Alumno con validaciones
-- [x] **Entity Framework** con migraciones
-- [x] **Autenticación API Key** completa
-- [x] **Controladores RESTful** con DTOs
-- [x] **Documentación Swagger** detallada
-- [x] **Docker support** para desarrollo
-- [x] **Health checks** para monitoreo
-- [x] **Respuestas estructuradas** con metadatos
-- [x] **Validaciones de negocio** automáticas
-
-### 🚧 Próximas Mejoras
-- [ ] **Tests unitarios** y de integración
-- [ ] **Paginación** para consultas grandes
-- [ ] **Filtros avanzados** de búsqueda
-- [ ] **Audit logs** para trazabilidad
-- [ ] **Rate limiting** para protección
-- [ ] **Caching** para mejor performance
-- [ ] **Métricas y monitoring** avanzado
-- [ ] **Front-end React** (siguiente fase)
+- 📖 **Swagger UI**: http://localhost:8080/swagger
+- 🐳 **Docker Guide**: [DOCKER.md](DOCKER.md)
+- 🔧 **API Reference**: Disponible en Swagger
+- 🏥 **Health Monitoring**: `/api/health/*`
 
 ---
 
-## 📞 Soporte y Contribución
+## 🏆 Estado del Proyecto
+
+### ✅ Backend Completado
+- [x] **API RESTful** con .NET 8
+- [x] **Base de datos** PostgreSQL
+- [x] **Autenticación** API Key
+- [x] **Documentación** Swagger completa
+- [x] **Docker** containerización completa
+- [x] **CORS** configurado para frontend
+- [x] **Health checks** implementados
+
+### 🚧 Próximo: Frontend React
+- [ ] **React App** con TypeScript
+- [ ] **Material-UI** o Bootstrap
+- [ ] **Estado global** con Context API
+- [ ] **Formularios** de creación/edición
+- [ ] **Tablas** con filtros y paginación
+
+---
+
+## 📞 Soporte
 
 ### 🆘 Obtener Ayuda
-1. 📖 Consultar documentación en `/swagger`
-2. 🏥 Verificar health checks en `/api/health`
-3. 📋 Revisar logs de la aplicación
-4. 🐳 Verificar estado de Docker containers
-
-### 🤝 Contribuir
-1. Fork del repositorio
-2. Crear branch feature: `git checkout -b feature/nueva-funcionalidad`
-3. Commit cambios: `git commit -m 'feat: agregar nueva funcionalidad'`
-4. Push al branch: `git push origin feature/nueva-funcionalidad`
-5. Crear Pull Request
+1. 📖 Consultar Swagger: http://localhost:8080/swagger
+2. 🏥 Verificar health: http://localhost:8080/api/health
+3. 📋 Ver logs: `docker-compose logs api`
+4. 🐳 Documentación Docker: [DOCKER.md](DOCKER.md)
 
 ### 📧 Contacto
-- **Email:** soporte@apicolegio.com
-- **Repository:** https://github.com/tu-usuario/api-colegio
-- **Issues:** https://github.com/tu-usuario/api-colegio/issues
+- **Repository**: https://github.com/tu-usuario/api-colegio
+- **Issues**: https://github.com/tu-usuario/api-colegio/issues
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está bajo la Licencia MIT.
 
 ---
 
-## 🏆 Créditos
-
-Desarrollado como parte de una **evaluación técnica de .NET y React**.
-
-**Tecnologías utilizadas:**
-- ⚡ .NET 8 & C# 12
-- 🐘 PostgreSQL 15
-- 🔧 Entity Framework Core
-- 📖 Swagger/OpenAPI
-- 🐳 Docker & Docker Compose
-- 🔐 API Key Authentication
-
----
-
-**¡Gracias por usar API Colegio! 🎓**
+**¡API lista para producción! Ahora puedes desarrollar el frontend sin preocuparte por el backend.** 🎉🚀

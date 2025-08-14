@@ -1,0 +1,63 @@
+# Directorios de compilación
+**/bin/
+**/obj/
+**/out/
+
+# Archivos de proyecto temporales
+**/.vs/
+**/.vscode/
+
+# Archivos de base de datos locales
+*.db
+*.sqlite
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+*.log
+
+# Variables de entorno locales
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentación que no necesita estar en el contenedor
+README.md
+*.md
+
+# Scripts de desarrollo local
+setup-database.bat
+setup-database.sh
+test-connection.bat
+
+# Archivos de Docker locales (evitar recursión)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Archivos de Entity Framework que se regeneran
+Migrations/
+
+# Node modules si los hay
+node_modules/
+npm-debug.log
+
+# Archivos de testing
+**/TestResults/
+**/*.trx
+
+# Archivos temporales
+*.tmp
+*.temp

@@ -33,6 +33,18 @@ builder.Services.AddAuthentication(ApiKeyAuthenticationSchemeOptions.DefaultSche
 // Configurar autorización
 builder.Services.AddAuthorization();
 
+// Configurar CORS para desarrollo frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:8080")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // Registrar servicios de la aplicación
 builder.Services.AddScoped<IAlumnoService, AlumnoService>();
 
@@ -67,7 +79,7 @@ Esta API permite gestionar información de alumnos de un colegio, incluyendo:
 - ? **.NET 8** con C# 12
 - ?? **PostgreSQL** como base de datos
 - ?? **Entity Framework Core** para ORM
-- ?? **Docker** para PostgreSQL local
+- ?? **Docker** para contenedores
 ",
         Contact = new OpenApiContact
         {
@@ -148,6 +160,11 @@ X-API-Key: colegio-api-key-2024
     // Configurar servers para diferentes entornos
     c.AddServer(new OpenApiServer 
     { 
+        Url = "http://localhost:8080", 
+        Description = "Docker Local" 
+    });
+    c.AddServer(new OpenApiServer 
+    { 
         Url = "http://localhost:5000", 
         Description = "Desarrollo Local" 
     });
@@ -161,33 +178,33 @@ X-API-Key: colegio-api-key-2024
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
+app.UseSwagger();
     
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Colegio V1.0.0");
-        c.RoutePrefix = "swagger";
-        
-        // Configuraciones de UI mejoradas
-        c.DisplayRequestDuration();
-        c.EnableDeepLinking();
-        c.EnableFilter();
-        c.ShowExtensions();
-        c.EnableValidator();
-        c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete);
-        
-        // Personalización visual
-        c.DocExpansion(DocExpansion.None);
-        c.DefaultModelExpandDepth(2);
-        c.DefaultModelsExpandDepth(1);
-        c.DisplayOperationId();
-        
-        // Información adicional
-        c.DocumentTitle = "API Colegio - Documentación Interactiva";
-    });
-}
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Colegio V1.0.0");
+    c.RoutePrefix = "swagger";
+    
+    // Configuraciones de UI mejoradas
+    c.DisplayRequestDuration();
+    c.EnableDeepLinking();
+    c.EnableFilter();
+    c.ShowExtensions();
+    c.EnableValidator();
+    c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete);
+    
+    // Personalización visual
+    c.DocExpansion(DocExpansion.None);
+    c.DefaultModelExpandDepth(2);
+    c.DefaultModelsExpandDepth(1);
+    c.DisplayOperationId();
+    
+    // Información adicional
+    c.DocumentTitle = "API Colegio - Documentación Interactiva";
+});
+
+// Configurar CORS antes de Authentication
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 
@@ -197,56 +214,77 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Asegurar que la base de datos esté creada
+// Asegurar que la base de datos esté creada (con reintentos para Docker)
 using (var scope = app.Services.CreateScope())
 {
-    try
+    var maxRetries = 5;
+    var delay = TimeSpan.FromSeconds(5);
+    
+    for (int i = 0; i < maxRetries; i++)
     {
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        Console.WriteLine("?? Verificando conexión a la base de datos...");
-        
-        // Verificar si se puede conectar
-        await context.Database.CanConnectAsync();
-        Console.WriteLine("? Conexión a PostgreSQL exitosa");
-        
-        // Crear la base de datos si no existe
-        await context.Database.EnsureCreatedAsync();
-        Console.WriteLine("? Base de datos configurada correctamente");
-        
-        // Verificar si hay datos
-        var count = await context.Alumnos.CountAsync();
-        Console.WriteLine($"?? Registros en la tabla alumnos: {count}");
-        
-        if (count > 0)
+        try
         {
-            var alumnos = await context.Alumnos.Take(3).ToListAsync();
-            Console.WriteLine("?? Algunos alumnos registrados:");
-            foreach (var alumno in alumnos)
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            
+            Console.WriteLine($"?? Intento {i + 1}/{maxRetries} - Verificando conexión a la base de datos...");
+            
+            // Verificar si se puede conectar
+            await context.Database.CanConnectAsync();
+            Console.WriteLine("? Conexión a PostgreSQL exitosa");
+            
+            // Crear la base de datos si no existe
+            await context.Database.EnsureCreatedAsync();
+            Console.WriteLine("? Base de datos configurada correctamente");
+            
+            // Verificar si hay datos
+            var count = await context.Alumnos.CountAsync();
+            Console.WriteLine($"?? Registros en la tabla alumnos: {count}");
+            
+            if (count > 0)
             {
-                Console.WriteLine($"   - {alumno.NombreAlumno} ({alumno.Grado} {alumno.Seccion})");
+                var alumnos = await context.Alumnos.Take(3).ToListAsync();
+                Console.WriteLine("?? Algunos alumnos registrados:");
+                foreach (var alumno in alumnos)
+                {
+                    Console.WriteLine($"   - {alumno.NombreAlumno} ({alumno.Grado} {alumno.Seccion})");
+                }
+            }
+            
+            break; // Conexión exitosa, salir del loop
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"? Intento {i + 1} falló: {ex.Message}");
+            
+            if (i == maxRetries - 1)
+            {
+                Console.WriteLine("?? Posibles soluciones:");
+                Console.WriteLine("   1. Verificar que PostgreSQL esté ejecutándose");
+                Console.WriteLine("   2. Verificar la cadena de conexión");
+                Console.WriteLine("   3. Verificar conectividad de red");
+            }
+            else
+            {
+                Console.WriteLine($"? Reintentando en {delay.TotalSeconds} segundos...");
+                await Task.Delay(delay);
             }
         }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"? Error al configurar la base de datos: {ex.Message}");
-        Console.WriteLine();
-        Console.WriteLine("?? Posibles soluciones:");
-        Console.WriteLine("   1. Iniciar Docker Desktop y ejecutar: docker-compose up -d");
-        Console.WriteLine("   2. Instalar PostgreSQL localmente");
-        Console.WriteLine("   3. Verificar la cadena de conexión en appsettings.json");
-        Console.WriteLine();
-        Console.WriteLine("?? Para más ayuda, ejecuta: test-connection.bat");
-    }
 }
 
+var environment = app.Environment.EnvironmentName;
+var urls = app.Configuration["ASPNETCORE_URLS"] ?? "http://localhost:5000";
+
 Console.WriteLine();
-Console.WriteLine("?? Aplicación iniciada. Accede a:");
-Console.WriteLine("   ?? Swagger: http://localhost:5000/swagger");
-Console.WriteLine("   ?? API Base: http://localhost:5000/api");
+Console.WriteLine("?? API Colegio iniciada correctamente!");
+Console.WriteLine($"?? Entorno: {environment}");
+Console.WriteLine($"?? URLs disponibles: {urls}");
+Console.WriteLine();
+Console.WriteLine("?? Acceso rápido:");
+Console.WriteLine("   ?? Swagger: /swagger");
+Console.WriteLine("   ?? API Base: /api");
 Console.WriteLine("   ?? API Key: colegio-api-key-2024");
-Console.WriteLine("   ?? Health: http://localhost:5000/api/health");
+Console.WriteLine("   ?? Health: /api/health");
 Console.WriteLine();
 
 app.Run();
