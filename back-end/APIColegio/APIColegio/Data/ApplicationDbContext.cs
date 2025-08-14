@@ -15,7 +15,7 @@ namespace APIColegio.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuración de la entidad Alumno
+            // Configuracion de la entidad Alumno
             modelBuilder.Entity<Alumno>(entity =>
             {
                 entity.ToTable("alumnos");
@@ -61,7 +61,7 @@ namespace APIColegio.Data
                     .HasColumnType("date")  // Usar date en lugar de timestamp
                     .IsRequired();
 
-                // Índices para optimizar consultas por grado
+                // Indices para optimizar consultas por grado
                 entity.HasIndex(e => e.Grado)
                     .HasDatabaseName("idx_alumnos_grado");
 
@@ -69,15 +69,15 @@ namespace APIColegio.Data
                     .HasDatabaseName("idx_alumnos_seccion");
             });
 
-            // Datos de prueba con DateTime.SpecifyKind para UTC
+            // Datos de prueba sin tildes para evitar problemas de codificacion
             modelBuilder.Entity<Alumno>().HasData(
                 new Alumno
                 {
                     Id = 1,
-                    NombreAlumno = "Juan Pérez García",
+                    NombreAlumno = "Juan Perez Garcia",
                     FechaNacimiento = new DateTime(2010, 5, 15),
-                    NombrePadre = "Carlos Pérez López",
-                    NombreMadre = "María García Hernández",
+                    NombrePadre = "Carlos Perez Lopez",
+                    NombreMadre = "Maria Garcia Hernandez",
                     Grado = "5to",
                     Seccion = "A",
                     FechaIngreso = new DateTime(2021, 2, 1)
@@ -85,10 +85,10 @@ namespace APIColegio.Data
                 new Alumno
                 {
                     Id = 2,
-                    NombreAlumno = "Ana López Martínez",
+                    NombreAlumno = "Ana Lopez Martinez",
                     FechaNacimiento = new DateTime(2009, 8, 22),
-                    NombrePadre = "Roberto López Silva",
-                    NombreMadre = "Carmen Martínez Rodríguez",
+                    NombrePadre = "Roberto Lopez Silva",
+                    NombreMadre = "Carmen Martinez Rodriguez",
                     Grado = "6to",
                     Seccion = "B",
                     FechaIngreso = new DateTime(2020, 2, 1)
@@ -96,9 +96,9 @@ namespace APIColegio.Data
                 new Alumno
                 {
                     Id = 3,
-                    NombreAlumno = "Luis Fernández Ruiz",
+                    NombreAlumno = "Luis Fernandez Ruiz",
                     FechaNacimiento = new DateTime(2011, 3, 10),
-                    NombrePadre = "José Fernández Castro",
+                    NombrePadre = "Jose Fernandez Castro",
                     NombreMadre = "Laura Ruiz Morales",
                     Grado = "4to",
                     Seccion = "A",

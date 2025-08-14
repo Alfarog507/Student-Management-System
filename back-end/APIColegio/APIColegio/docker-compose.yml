@@ -32,7 +32,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=colegiodb;Username=postgres;Password=admin;Port=5432
-      - ApiKey=colegio-api-key-2024
+      - ApiKey=colegio-api-key-2025
     ports:
       - "8080:8080"
     depends_on:

@@ -110,7 +110,7 @@ namespace APIColegio.Controllers
                 Description = "API RESTful para gestion de alumnos del colegio",
                 AuthenticationRequired = true,
                 ApiKeyHeader = "X-API-Key",
-                DefaultApiKey = "colegio-api-key-2024",
+                DefaultApiKey = "colegio-api-key-2025",
                 Endpoints = new[]
                 {
                     new { Method = "GET", Path = "/api/alumnos", Description = "Obtener todos los alumnos", Auth = true },

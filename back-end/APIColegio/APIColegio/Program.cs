@@ -69,7 +69,7 @@ Esta API permite gestionar informacion de alumnos de un colegio, incluyendo:
 
 ## Autenticacion
 - 🔐 **API Key requerida** para todos los endpoints de alumnos
-- 🔑 Header: `X-API-Key: colegio-api-key-2024`
+- 🔑 Header: `X-API-Key: colegio-api-key-2025`
 
 ## Datos de Prueba
 - 👥 **3 alumnos precargados** para testing
@@ -104,12 +104,12 @@ Esta API permite gestionar informacion de alumnos de un colegio, incluyendo:
 Para usar esta API, necesitas incluir el header de autenticacion en todas las peticiones:
 
 ```
-X-API-Key: colegio-api-key-2024
+X-API-Key: colegio-api-key-2025
 ```
 
 ### Como usarlo:
 1. Haz clic en el boton 'Authorize' 🔓
-2. Ingresa: `colegio-api-key-2024`
+2. Ingresa: `colegio-api-key-2025`
 3. Haz clic en 'Authorize'
 4. ¡Ahora puedes probar todos los endpoints! 🚀
 
