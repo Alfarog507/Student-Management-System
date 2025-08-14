@@ -1,4 +1,5 @@
 using APIColegio.Data;
+using APIColegio.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.EnableDetailedErrors();
     }
 });
+
+// Registrar servicios de la aplicación
+builder.Services.AddScoped<IAlumnoService, AlumnoService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -54,24 +58,24 @@ using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
-        Console.WriteLine(" Verificando conexión a la base de datos...");
+        Console.WriteLine("Verificando conexión a la base de datos...");
         
         // Verificar si se puede conectar
         await context.Database.CanConnectAsync();
-        Console.WriteLine(" Conexión a PostgreSQL exitosa");
+        Console.WriteLine("Conexión a PostgreSQL exitosa");
         
         // Crear la base de datos si no existe
         await context.Database.EnsureCreatedAsync();
-        Console.WriteLine(" Base de datos configurada correctamente");
+        Console.WriteLine("Base de datos configurada correctamente");
         
         // Verificar si hay datos
         var count = await context.Alumnos.CountAsync();
-        Console.WriteLine($" Registros en la tabla alumnos: {count}");
+        Console.WriteLine($"Registros en la tabla alumnos: {count}");
         
         if (count > 0)
         {
             var alumnos = await context.Alumnos.Take(3).ToListAsync();
-            Console.WriteLine(" Algunos alumnos registrados:");
+            Console.WriteLine("Algunos alumnos registrados:");
             foreach (var alumno in alumnos)
             {
                 Console.WriteLine($"   - {alumno.NombreAlumno} ({alumno.Grado} {alumno.Seccion})");
@@ -80,21 +84,21 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($" Error al configurar la base de datos: {ex.Message}");
+        Console.WriteLine($"Error al configurar la base de datos: {ex.Message}");
         Console.WriteLine();
-        Console.WriteLine(" Posibles soluciones:");
+        Console.WriteLine("Posibles soluciones:");
         Console.WriteLine("   1. Iniciar Docker Desktop y ejecutar: docker-compose up -d");
         Console.WriteLine("   2. Instalar PostgreSQL localmente");
         Console.WriteLine("   3. Verificar la cadena de conexión en appsettings.json");
         Console.WriteLine();
-        Console.WriteLine(" Para más ayuda, ejecuta: test-connection.bat");
+        Console.WriteLine("Para más ayuda, ejecuta: test-connection.bat");
     }
 }
 
 Console.WriteLine();
 Console.WriteLine("Aplicación iniciada. Accede a:");
-Console.WriteLine("    Swagger: http://localhost:5000/swagger");
-Console.WriteLine("    API Base: http://localhost:5000/api");
+Console.WriteLine("   Swagger: http://localhost:5000/swagger");
+Console.WriteLine("   API Base: http://localhost:5000/api");
 Console.WriteLine();
 
 app.Run();
