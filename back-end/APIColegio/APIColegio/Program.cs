@@ -1,9 +1,35 @@
+using APIColegio.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
+
+// Configurar Entity Framework con PostgreSQL
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseNpgsql(connectionString);
+    
+    // Solo habilitar errores detallados en desarrollo (sin logging de SQL)
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableDetailedErrors();
+    }
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
+    { 
+        Title = "API Colegio", 
+        Version = "v1",
+        Description = "API para gestión de alumnos del colegio"
+    });
+});
 
 var app = builder.Build();
 
@@ -11,34 +37,64 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Colegio V1");
+    });
 }
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapControllers();
 
-app.MapGet("/weatherforecast", () =>
+// Asegurar que la base de datos esté creada
+using (var scope = app.Services.CreateScope())
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
+        Console.WriteLine(" Verificando conexión a la base de datos...");
+        
+        // Verificar si se puede conectar
+        await context.Database.CanConnectAsync();
+        Console.WriteLine(" Conexión a PostgreSQL exitosa");
+        
+        // Crear la base de datos si no existe
+        await context.Database.EnsureCreatedAsync();
+        Console.WriteLine(" Base de datos configurada correctamente");
+        
+        // Verificar si hay datos
+        var count = await context.Alumnos.CountAsync();
+        Console.WriteLine($" Registros en la tabla alumnos: {count}");
+        
+        if (count > 0)
+        {
+            var alumnos = await context.Alumnos.Take(3).ToListAsync();
+            Console.WriteLine(" Algunos alumnos registrados:");
+            foreach (var alumno in alumnos)
+            {
+                Console.WriteLine($"   - {alumno.NombreAlumno} ({alumno.Grado} {alumno.Seccion})");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($" Error al configurar la base de datos: {ex.Message}");
+        Console.WriteLine();
+        Console.WriteLine(" Posibles soluciones:");
+        Console.WriteLine("   1. Iniciar Docker Desktop y ejecutar: docker-compose up -d");
+        Console.WriteLine("   2. Instalar PostgreSQL localmente");
+        Console.WriteLine("   3. Verificar la cadena de conexión en appsettings.json");
+        Console.WriteLine();
+        Console.WriteLine(" Para más ayuda, ejecuta: test-connection.bat");
+    }
+}
+
+Console.WriteLine();
+Console.WriteLine("Aplicación iniciada. Accede a:");
+Console.WriteLine("    Swagger: http://localhost:5000/swagger");
+Console.WriteLine("    API Base: http://localhost:5000/api");
+Console.WriteLine();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
