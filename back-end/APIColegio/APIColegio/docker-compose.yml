@@ -48,20 +48,6 @@ services:
       retries: 3
       start_period: 40s
 
-  # Adminer para administrar PostgreSQL (opcional)
-  adminer:
-    image: adminer
-    container_name: colegio_adminer
-    ports:
-      - "8081:8080"
-    depends_on:
-      - postgres
-    networks:
-      - colegio-network
-    restart: unless-stopped
-    environment:
-      ADMINER_DEFAULT_SERVER: postgres
-
 volumes:
   postgres_data:
     driver: local

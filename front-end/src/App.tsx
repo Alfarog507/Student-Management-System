@@ -1,46 +1,46 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import Navbar from "./components/Navbar";
+import LoadingSpinner from "./components/LoadingSpinner";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [vistaActual, setVistaActual] = useState<"lista" | "formulario">(
+    "lista"
+  );
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <div className="flex space-x-8 mb-8">
-        <a href="https://vite.dev" target="_blank">
-          <img
-            src={viteLogo}
-            className="logo w-16 h-16 hover:animate-spin"
-            alt="Vite logo"
-          />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img
-            src={reactLogo}
-            className="logo react w-16 h-16 hover:animate-spin"
-            alt="React logo"
-          />
-        </a>
+    <div className="min-h-screen bg-gray-100">
+      <Navbar vistaActual={vistaActual} onCambiarVista={setVistaActual} />
+
+      <div className="container mx-auto p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          {vistaActual === "lista" ? (
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                📋 Lista de Alumnos
+              </h2>
+              <div className="text-center py-8">
+                <LoadingSpinner message="Próximamente: Lista de alumnos" />
+                <p className="text-gray-600 mt-4">
+                  El componente de lista se implementará en el siguiente commit
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                ➕ Agregar Nuevo Alumno
+              </h2>
+              <div className="text-center py-8">
+                <LoadingSpinner message="Próximamente: Formulario de alumnos" />
+                <p className="text-gray-600 mt-4">
+                  El formulario se implementará en el siguiente commit
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Vite + React</h1>
-      <div className="card bg-white p-8 rounded-lg shadow-lg">
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          count is {count}
-        </button>
-        <p className="text-gray-600 mb-4">
-          Edit{" "}
-          <code className="bg-gray-200 px-2 py-1 rounded">src/App.tsx</code> and
-          save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs text-gray-500 mt-8">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   );
 }
