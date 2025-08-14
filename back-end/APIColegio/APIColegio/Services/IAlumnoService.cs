@@ -12,10 +12,11 @@ namespace APIColegio.Services
         Task<AlumnoResponseDto> CreateAlumnoAsync(AlumnoCreateDto alumnoDto);
         
         /// <summary>
-        /// Obtener todos los alumnos
+        /// Obtener todos los alumnos con ordenamiento
         /// </summary>
+        /// <param name="orderBy">Campo de ordenamiento: id, nombre, grado</param>
         /// <returns>Lista de todos los alumnos</returns>
-        Task<IEnumerable<AlumnoResponseDto>> GetAllAlumnosAsync();
+        Task<IEnumerable<AlumnoResponseDto>> GetAllAlumnosAsync(string orderBy = "id");
         
         /// <summary>
         /// Obtener alumnos por grado
