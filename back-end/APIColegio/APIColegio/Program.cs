@@ -1,4 +1,4 @@
-using APIColegio.Authentication;
+Ôªøusing APIColegio.Authentication;
 using APIColegio.Data;
 using APIColegio.Services;
 using Microsoft.EntityFrameworkCore;
@@ -24,13 +24,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
-// Configurar autenticaciÛn con API Key
+// Configurar autenticacion con API Key
 builder.Services.AddAuthentication(ApiKeyAuthenticationSchemeOptions.DefaultScheme)
     .AddScheme<ApiKeyAuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
         ApiKeyAuthenticationSchemeOptions.DefaultScheme, 
         options => { });
 
-// Configurar autorizaciÛn
+// Configurar autorizacion
 builder.Services.AddAuthorization();
 
 // Configurar CORS para desarrollo frontend
@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Registrar servicios de la aplicaciÛn
+// Registrar servicios de la aplicacion
 builder.Services.AddScoped<IAlumnoService, AlumnoService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -54,32 +54,32 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo 
     { 
-        Title = "API Colegio - Sistema de GestiÛn de Alumnos", 
+        Title = "API Colegio - Sistema de Gestion de Alumnos", 
         Version = "v1.0.0",
         Description = @"
-# API RESTful para GestiÛn de Alumnos
+# API RESTful para Gestion de Alumnos
 
-Esta API permite gestionar informaciÛn de alumnos de un colegio, incluyendo:
+Esta API permite gestionar informacion de alumnos de un colegio, incluyendo:
 
 ## Funcionalidades
-- ? **Crear alumnos** con informaciÛn completa
-- ? **Consultar alumnos** por ID, grado o todos
-- ? **Validaciones de negocio** autom·ticas
-- ? **Respuestas estructuradas** con metadatos
+- ‚úÖ **Crear alumnos** con informacion completa
+- ‚úÖ **Consultar alumnos** por ID, grado o todos
+- ‚úÖ **Validaciones de negocio** automaticas
+- ‚úÖ **Respuestas estructuradas** con metadatos
 
-## AutenticaciÛn
-- ?? **API Key requerida** para todos los endpoints de alumnos
-- ?? Header: `X-API-Key: colegio-api-key-2024`
+## Autenticacion
+- üîê **API Key requerida** para todos los endpoints de alumnos
+- üîë Header: `X-API-Key: colegio-api-key-2024`
 
 ## Datos de Prueba
-- ?? **3 alumnos precargados** para testing
-- ?? **Diferentes grados y secciones** disponibles
+- üë• **3 alumnos precargados** para testing
+- üìä **Diferentes grados y secciones** disponibles
 
-## TecnologÌas
-- ? **.NET 8** con C# 12
-- ?? **PostgreSQL** como base de datos
-- ?? **Entity Framework Core** para ORM
-- ?? **Docker** para contenedores
+## Tecnologias
+- ‚ö° **.NET 8** con C# 12
+- üêò **PostgreSQL** como base de datos
+- üîß **Entity Framework Core** para ORM
+- üê≥ **Docker** para contenedores
 ",
         Contact = new OpenApiContact
         {
@@ -95,25 +95,25 @@ Esta API permite gestionar informaciÛn de alumnos de un colegio, incluyendo:
         TermsOfService = new Uri("https://apicolegio.com/terms")
     });
 
-    // Configurar autenticaciÛn en Swagger
+    // Configurar autenticacion en Swagger
     c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
     {
         Description = @"
 **API Key Authentication**
 
-Para usar esta API, necesitas incluir el header de autenticaciÛn en todas las peticiones:
+Para usar esta API, necesitas incluir el header de autenticacion en todas las peticiones:
 
 ```
 X-API-Key: colegio-api-key-2024
 ```
 
-### CÛmo usarlo:
-1. Haz clic en el botÛn 'Authorize' ??
+### Como usarlo:
+1. Haz clic en el boton 'Authorize' üîì
 2. Ingresa: `colegio-api-key-2024`
 3. Haz clic en 'Authorize'
-4. °Ahora puedes probar todos los endpoints! ??
+4. ¬°Ahora puedes probar todos los endpoints! üöÄ
 
-**Nota:** Los endpoints de `/health` no requieren autenticaciÛn.
+**Nota:** Los endpoints de `/health` no requieren autenticacion.
 ",
         In = ParameterLocation.Header,
         Name = "X-API-Key",
@@ -142,7 +142,7 @@ X-API-Key: colegio-api-key-2024
     // Habilitar anotaciones de Swagger
     c.EnableAnnotations();
 
-    // Incluir comentarios XML para documentaciÛn
+    // Incluir comentarios XML para documentacion
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -171,7 +171,7 @@ X-API-Key: colegio-api-key-2024
     c.AddServer(new OpenApiServer 
     { 
         Url = "https://api-colegio.com", 
-        Description = "ProducciÛn" 
+        Description = "Produccion" 
     });
 });
 
@@ -193,14 +193,14 @@ app.UseSwaggerUI(c =>
     c.EnableValidator();
     c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete);
     
-    // PersonalizaciÛn visual
+    // Personalizacion visual
     c.DocExpansion(DocExpansion.None);
     c.DefaultModelExpandDepth(2);
     c.DefaultModelsExpandDepth(1);
     c.DisplayOperationId();
     
-    // InformaciÛn adicional
-    c.DocumentTitle = "API Colegio - DocumentaciÛn Interactiva";
+    // Informacion adicional
+    c.DocumentTitle = "API Colegio - Documentacion Interactiva";
 });
 
 // Configurar CORS antes de Authentication
@@ -208,13 +208,13 @@ app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 
-// Middleware de autenticaciÛn y autorizaciÛn
+// Middleware de autenticacion y autorizacion
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Asegurar que la base de datos estÈ creada (con reintentos para Docker)
+// Asegurar que la base de datos este creada (con reintentos para Docker)
 using (var scope = app.Services.CreateScope())
 {
     var maxRetries = 5;
@@ -226,46 +226,46 @@ using (var scope = app.Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             
-            Console.WriteLine($"?? Intento {i + 1}/{maxRetries} - Verificando conexiÛn a la base de datos...");
+            Console.WriteLine($"üîÑ Intento {i + 1}/{maxRetries} - Verificando conexion a la base de datos...");
             
             // Verificar si se puede conectar
             await context.Database.CanConnectAsync();
-            Console.WriteLine("? ConexiÛn a PostgreSQL exitosa");
+            Console.WriteLine("‚úÖ Conexion a PostgreSQL exitosa");
             
             // Crear la base de datos si no existe
             await context.Database.EnsureCreatedAsync();
-            Console.WriteLine("? Base de datos configurada correctamente");
+            Console.WriteLine("‚úÖ Base de datos configurada correctamente");
             
             // Verificar si hay datos
             var count = await context.Alumnos.CountAsync();
-            Console.WriteLine($"?? Registros en la tabla alumnos: {count}");
+            Console.WriteLine($"üìä Registros en la tabla alumnos: {count}");
             
             if (count > 0)
             {
                 var alumnos = await context.Alumnos.Take(3).ToListAsync();
-                Console.WriteLine("?? Algunos alumnos registrados:");
+                Console.WriteLine("üë• Algunos alumnos registrados:");
                 foreach (var alumno in alumnos)
                 {
                     Console.WriteLine($"   - {alumno.NombreAlumno} ({alumno.Grado} {alumno.Seccion})");
                 }
             }
             
-            break; // ConexiÛn exitosa, salir del loop
+            break; // Conexion exitosa, salir del loop
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"? Intento {i + 1} fallÛ: {ex.Message}");
+            Console.WriteLine($"‚ùå Intento {i + 1} fallo: {ex.Message}");
             
             if (i == maxRetries - 1)
             {
-                Console.WriteLine("?? Posibles soluciones:");
-                Console.WriteLine("   1. Verificar que PostgreSQL estÈ ejecut·ndose");
-                Console.WriteLine("   2. Verificar la cadena de conexiÛn");
+                Console.WriteLine("üí° Posibles soluciones:");
+                Console.WriteLine("   1. Verificar que PostgreSQL este ejecutandose");
+                Console.WriteLine("   2. Verificar la cadena de conexion");
                 Console.WriteLine("   3. Verificar conectividad de red");
             }
             else
             {
-                Console.WriteLine($"? Reintentando en {delay.TotalSeconds} segundos...");
+                Console.WriteLine($"‚è≥ Reintentando en {delay.TotalSeconds} segundos...");
                 await Task.Delay(delay);
             }
         }
@@ -276,15 +276,15 @@ var environment = app.Environment.EnvironmentName;
 var urls = app.Configuration["ASPNETCORE_URLS"] ?? "http://localhost:5000";
 
 Console.WriteLine();
-Console.WriteLine("?? API Colegio iniciada correctamente!");
-Console.WriteLine($"?? Entorno: {environment}");
-Console.WriteLine($"?? URLs disponibles: {urls}");
+Console.WriteLine("üöÄ API Colegio iniciada correctamente!");
+Console.WriteLine($"üåç Entorno: {environment}");
+Console.WriteLine($"üîó URLs disponibles: {urls}");
 Console.WriteLine();
-Console.WriteLine("?? Acceso r·pido:");
-Console.WriteLine("   ?? Swagger: /swagger");
-Console.WriteLine("   ?? API Base: /api");
-Console.WriteLine("   ?? API Key: colegio-api-key-2024");
-Console.WriteLine("   ?? Health: /api/health");
+Console.WriteLine("üìã Acceso rapido:");
+Console.WriteLine("   üìñ Swagger: /swagger");
+Console.WriteLine("   üåê API Base: /api");
+Console.WriteLine("   üîë API Key: colegio-api-key-2024");
+Console.WriteLine("   üè• Health: /api/health");
 Console.WriteLine();
 
 app.Run();

@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace APIColegio.Controllers
 {
     /// <summary>
-    /// Controlador para la gestión de alumnos del colegio
+    /// Controlador para la gestion de alumnos del colegio
     /// </summary>
     /// <remarks>
     /// Este controlador proporciona endpoints para:
@@ -16,13 +16,13 @@ namespace APIColegio.Controllers
     /// - Validar datos de entrada
     /// - Manejar respuestas estructuradas
     /// 
-    /// **Requiere autenticación con API Key**
+    /// **Requiere autenticacion con API Key**
     /// </remarks>
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
     [Authorize]
-    [SwaggerTag("Gestión de alumnos del colegio")]
+    [SwaggerTag("Gestion de alumnos del colegio")]
     public class AlumnosController : ControllerBase
     {
         private readonly IAlumnoService _alumnoService;
@@ -31,7 +31,7 @@ namespace APIColegio.Controllers
         /// <summary>
         /// Constructor del controlador de alumnos
         /// </summary>
-        /// <param name="alumnoService">Servicio de gestión de alumnos</param>
+        /// <param name="alumnoService">Servicio de gestion de alumnos</param>
         /// <param name="logger">Logger para el controlador</param>
         public AlumnosController(IAlumnoService alumnoService, ILogger<AlumnosController> logger)
         {
@@ -45,10 +45,10 @@ namespace APIColegio.Controllers
         /// <remarks>
         /// Obtiene una lista completa de todos los alumnos registrados en el sistema.
         /// 
-        /// **Parámetros de ordenamiento disponibles:**
+        /// **Parametros de ordenamiento disponibles:**
         /// - `id`: Ordenar por ID del alumno (por defecto)
-        /// - `nombre`: Ordenar alfabéticamente por nombre
-        /// - `grado`: Ordenar por grado, luego sección, luego nombre
+        /// - `nombre`: Ordenar alfabeticamente por nombre
+        /// - `grado`: Ordenar por grado, luego seccion, luego nombre
         /// 
         /// **Ejemplo de uso:**
         /// ```
@@ -63,10 +63,10 @@ namespace APIColegio.Controllers
         ///   "data": [
         ///     {
         ///       "id": 1,
-        ///       "nombreAlumno": "Juan Pérez",
+        ///       "nombreAlumno": "Juan Perez",
         ///       "fechaNacimiento": "2010-05-15",
-        ///       "nombrePadre": "Carlos Pérez",
-        ///       "nombreMadre": "María García",
+        ///       "nombrePadre": "Carlos Perez",
+        ///       "nombreMadre": "Maria Garcia",
         ///       "grado": "5to",
         ///       "seccion": "A",
         ///       "fechaIngreso": "2021-02-01",
@@ -81,10 +81,10 @@ namespace APIColegio.Controllers
         /// ```
         /// </remarks>
         /// <param name="orderBy">Campo de ordenamiento: id, nombre, grado (default: id)</param>
-        /// <returns>Lista de todos los alumnos con información adicional</returns>
+        /// <returns>Lista de todos los alumnos con informacion adicional</returns>
         /// <response code="200">Lista de alumnos obtenida exitosamente</response>
-        /// <response code="400">Parámetro de ordenamiento inválido</response>
-        /// <response code="401">No autorizado - API Key requerida o inválida</response>
+        /// <response code="400">Parametro de ordenamiento invalido</response>
+        /// <response code="401">No autorizado - API Key requerida o invalida</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpGet]
         [SwaggerOperation(Summary = "Obtener todos los alumnos", Description = "Retorna una lista paginada de todos los alumnos con opciones de ordenamiento")]
@@ -112,7 +112,7 @@ namespace APIColegio.Controllers
             }
             catch (ArgumentException ex)
             {
-                _logger.LogWarning(ex, "Parámetro de ordenamiento inválido: {OrderBy}", orderBy);
+                _logger.LogWarning(ex, "Parametro de ordenamiento invalido: {OrderBy}", orderBy);
                 return BadRequest(new ApiErrorResponse
                 {
                     Success = false,
@@ -138,9 +138,9 @@ namespace APIColegio.Controllers
         /// Obtener alumnos por grado
         /// </summary>
         /// <remarks>
-        /// Filtra y obtiene todos los alumnos que pertenecen a un grado específico.
+        /// Filtra y obtiene todos los alumnos que pertenecen a un grado especifico.
         /// 
-        /// **Grados válidos típicos:**
+        /// **Grados validos tipicos:**
         /// - Preescolar: `kinder`, `pre-kinder`
         /// - Primaria: `1ro`, `2do`, `3ro`, `4to`, `5to`, `6to`
         /// - Secundaria: `7mo`, `8vo`, `9no`, `10mo`, `11vo`
@@ -151,17 +151,17 @@ namespace APIColegio.Controllers
         /// X-API-Key: colegio-api-key-2024
         /// ```
         /// 
-        /// Los resultados se ordenan automáticamente por sección y luego por nombre del alumno.
+        /// Los resultados se ordenan automaticamente por seccion y luego por nombre del alumno.
         /// </remarks>
         /// <param name="grado">Grado a consultar (ej: 5to, 6to, 1ro)</param>
         /// <returns>Lista de alumnos del grado especificado</returns>
         /// <response code="200">Alumnos del grado obtenidos exitosamente</response>
-        /// <response code="400">Grado inválido o no especificado</response>
-        /// <response code="401">No autorizado - API Key requerida o inválida</response>
+        /// <response code="400">Grado invalido o no especificado</response>
+        /// <response code="401">No autorizado - API Key requerida o invalida</response>
         /// <response code="404">No se encontraron alumnos en el grado especificado</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpGet("grado/{grado}")]
-        [SwaggerOperation(Summary = "Obtener alumnos por grado", Description = "Filtra alumnos por grado específico")]
+        [SwaggerOperation(Summary = "Obtener alumnos por grado", Description = "Filtra alumnos por grado especifico")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<AlumnoResponseDto>>), 200)]
         [ProducesResponseType(typeof(ApiErrorResponse), 400)]
         [ProducesResponseType(typeof(object), 401)]
@@ -223,7 +223,7 @@ namespace APIColegio.Controllers
         /// Obtener un alumno por ID
         /// </summary>
         /// <remarks>
-        /// Busca y retorna un alumno específico por su identificador único.
+        /// Busca y retorna un alumno especifico por su identificador unico.
         /// 
         /// **Ejemplo de uso:**
         /// ```
@@ -237,10 +237,10 @@ namespace APIColegio.Controllers
         ///   "success": true,
         ///   "data": {
         ///     "id": 1,
-        ///     "nombreAlumno": "Juan Pérez García",
+        ///     "nombreAlumno": "Juan Perez Garcia",
         ///     "fechaNacimiento": "2010-05-15",
-        ///     "nombrePadre": "Carlos Pérez López",
-        ///     "nombreMadre": "María García Hernández",
+        ///     "nombrePadre": "Carlos Perez Lopez",
+        ///     "nombreMadre": "Maria Garcia Hernandez",
         ///     "grado": "5to",
         ///     "seccion": "A",
         ///     "fechaIngreso": "2021-02-01",
@@ -252,15 +252,15 @@ namespace APIColegio.Controllers
         /// }
         /// ```
         /// </remarks>
-        /// <param name="id">ID único del alumno (debe ser un número positivo)</param>
+        /// <param name="id">ID unico del alumno (debe ser un numero positivo)</param>
         /// <returns>Datos completos del alumno encontrado</returns>
         /// <response code="200">Alumno encontrado exitosamente</response>
-        /// <response code="400">ID inválido (debe ser un número positivo)</response>
-        /// <response code="401">No autorizado - API Key requerida o inválida</response>
+        /// <response code="400">ID invalido (debe ser un numero positivo)</response>
+        /// <response code="401">No autorizado - API Key requerida o invalida</response>
         /// <response code="404">Alumno no encontrado con el ID especificado</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpGet("{id:int}")]
-        [SwaggerOperation(Summary = "Obtener alumno por ID", Description = "Busca un alumno específico por su identificador único")]
+        [SwaggerOperation(Summary = "Obtener alumno por ID", Description = "Busca un alumno especifico por su identificador unico")]
         [ProducesResponseType(typeof(ApiResponse<AlumnoResponseDto>), 200)]
         [ProducesResponseType(typeof(ApiErrorResponse), 400)]
         [ProducesResponseType(typeof(object), 401)]
@@ -275,7 +275,7 @@ namespace APIColegio.Controllers
                     return BadRequest(new ApiErrorResponse
                     {
                         Success = false,
-                        Message = "El ID debe ser un número positivo",
+                        Message = "El ID debe ser un numero positivo",
                         ErrorCode = "INVALID_ID",
                         Timestamp = DateTime.UtcNow
                     });
@@ -288,7 +288,7 @@ namespace APIColegio.Controllers
                     return NotFound(new ApiErrorResponse
                     {
                         Success = false,
-                        Message = $"No se encontró alumno con ID: {id}",
+                        Message = $"No se encontro alumno con ID: {id}",
                         ErrorCode = "STUDENT_NOT_FOUND",
                         Timestamp = DateTime.UtcNow
                     });
@@ -321,23 +321,23 @@ namespace APIColegio.Controllers
         /// Crear un nuevo alumno
         /// </summary>
         /// <remarks>
-        /// Registra un nuevo alumno en el sistema con validaciones automáticas.
+        /// Registra un nuevo alumno en el sistema con validaciones automaticas.
         /// 
         /// **Validaciones aplicadas:**
         /// - Todos los campos son obligatorios
         /// - Nombres no pueden exceder 100 caracteres
-        /// - Grado máximo 20 caracteres
-        /// - Sección máximo 10 caracteres
+        /// - Grado maximo 20 caracteres
+        /// - Seccion maximo 10 caracteres
         /// - Fecha de nacimiento no puede ser futura
         /// - Fecha de ingreso no puede ser anterior a la fecha de nacimiento
         /// 
-        /// **Ejemplo de petición:**
+        /// **Ejemplo de peticion:**
         /// ```json
         /// {
-        ///   "nombreAlumno": "María González Pérez",
+        ///   "nombreAlumno": "Maria Gonzalez Perez",
         ///   "fechaNacimiento": "2011-07-20",
-        ///   "nombrePadre": "Juan González",
-        ///   "nombreMadre": "Ana Pérez",
+        ///   "nombrePadre": "Juan Gonzalez",
+        ///   "nombreMadre": "Ana Perez",
         ///   "grado": "4to",
         ///   "seccion": "B",
         ///   "fechaIngreso": "2023-02-01"
@@ -350,10 +350,10 @@ namespace APIColegio.Controllers
         ///   "success": true,
         ///   "data": {
         ///     "id": 4,
-        ///     "nombreAlumno": "María González Pérez",
+        ///     "nombreAlumno": "Maria Gonzalez Perez",
         ///     "fechaNacimiento": "2011-07-20",
-        ///     "nombrePadre": "Juan González",
-        ///     "nombreMadre": "Ana Pérez",
+        ///     "nombrePadre": "Juan Gonzalez",
+        ///     "nombreMadre": "Ana Perez",
         ///     "grado": "4to",
         ///     "seccion": "B",
         ///     "fechaIngreso": "2023-02-01",
@@ -368,12 +368,12 @@ namespace APIColegio.Controllers
         /// <param name="alumnoDto">Datos del alumno a crear</param>
         /// <returns>Datos completos del alumno creado</returns>
         /// <response code="201">Alumno creado exitosamente</response>
-        /// <response code="400">Datos de entrada inválidos o validaciones fallidas</response>
-        /// <response code="401">No autorizado - API Key requerida o inválida</response>
+        /// <response code="400">Datos de entrada invalidos o validaciones fallidas</response>
+        /// <response code="401">No autorizado - API Key requerida o invalida</response>
         /// <response code="409">Conflicto - Alumno ya existe (futuro)</response>
         /// <response code="500">Error interno del servidor</response>
         [HttpPost]
-        [SwaggerOperation(Summary = "Crear nuevo alumno", Description = "Registra un nuevo alumno con validaciones automáticas")]
+        [SwaggerOperation(Summary = "Crear nuevo alumno", Description = "Registra un nuevo alumno con validaciones automaticas")]
         [ProducesResponseType(typeof(ApiResponse<AlumnoResponseDto>), 201)]
         [ProducesResponseType(typeof(ApiErrorResponse), 400)]
         [ProducesResponseType(typeof(object), 401)]
@@ -393,14 +393,14 @@ namespace APIColegio.Controllers
                     return BadRequest(new ApiErrorResponse
                     {
                         Success = false,
-                        Message = "Datos de entrada inválidos",
+                        Message = "Datos de entrada invalidos",
                         ErrorCode = "VALIDATION_ERROR",
                         Errors = errors,
                         Timestamp = DateTime.UtcNow
                     });
                 }
 
-                // Validación de negocio: fechas lógicas
+                // Validacion de negocio: fechas logicas
                 if (alumnoDto.FechaNacimiento > DateTime.Now)
                 {
                     return BadRequest(new ApiErrorResponse

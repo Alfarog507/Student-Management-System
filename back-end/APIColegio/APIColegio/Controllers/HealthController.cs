@@ -4,20 +4,20 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace APIColegio.Controllers
 {
     /// <summary>
-    /// Controlador de salud y diagnóstico del sistema
+    /// Controlador de salud y diagnostico del sistema
     /// </summary>
     /// <remarks>
-    /// Este controlador proporciona endpoints públicos para:
+    /// Este controlador proporciona endpoints publicos para:
     /// - Verificar el estado de la API
-    /// - Obtener información básica del sistema
-    /// - Monitoreo y diagnóstico
+    /// - Obtener informacion basica del sistema
+    /// - Monitoreo y diagnostico
     /// 
-    /// **No requiere autenticación**
+    /// **No requiere autenticacion**
     /// </remarks>
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    [SwaggerTag("Salud y diagnóstico del sistema")]
+    [SwaggerTag("Salud y diagnostico del sistema")]
     public class HealthController : ControllerBase
     {
         private readonly ILogger<HealthController> _logger;
@@ -35,15 +35,15 @@ namespace APIColegio.Controllers
         /// Verificar el estado de salud de la API
         /// </summary>
         /// <remarks>
-        /// Endpoint público para verificar que la API esté funcionando correctamente.
-        /// Útil para monitoreo, load balancers y sistemas de orquestación.
+        /// Endpoint publico para verificar que la API este funcionando correctamente.
+        /// Util para monitoreo, load balancers y sistemas de orquestacion.
         /// 
         /// **Ejemplo de uso:**
         /// ```
         /// GET /api/health
         /// ```
         /// 
-        /// **Respuesta típica:**
+        /// **Respuesta tipica:**
         /// ```json
         /// {
         ///   "status": "Healthy",
@@ -57,7 +57,7 @@ namespace APIColegio.Controllers
         /// <returns>Estado de salud de la API</returns>
         /// <response code="200">API funcionando correctamente</response>
         [HttpGet]
-        [SwaggerOperation(Summary = "Health Check", Description = "Verifica que la API esté funcionando correctamente")]
+        [SwaggerOperation(Summary = "Health Check", Description = "Verifica que la API este funcionando correctamente")]
         [ProducesResponseType(typeof(object), 200)]
         public ActionResult GetHealth()
         {
@@ -77,29 +77,29 @@ namespace APIColegio.Controllers
         }
 
         /// <summary>
-        /// Obtener información general de la API
+        /// Obtener informacion general de la API
         /// </summary>
         /// <remarks>
-        /// Proporciona información básica sobre la API, sus endpoints disponibles 
-        /// y requisitos de autenticación.
+        /// Proporciona informacion basica sobre la API, sus endpoints disponibles 
+        /// y requisitos de autenticacion.
         /// 
         /// **Ejemplo de uso:**
         /// ```
         /// GET /api/health/info
         /// ```
         /// 
-        /// **Información incluida:**
-        /// - Nombre y versión de la API
+        /// **Informacion incluida:**
+        /// - Nombre y version de la API
         /// - Lista de endpoints principales
-        /// - Requisitos de autenticación
-        /// - Enlaces a documentación
+        /// - Requisitos de autenticacion
+        /// - Enlaces a documentacion
         /// 
-        /// Este endpoint es útil para descubrimiento de API y documentación automática.
+        /// Este endpoint es util para descubrimiento de API y documentacion automatica.
         /// </remarks>
-        /// <returns>Información básica de la API</returns>
-        /// <response code="200">Información de la API obtenida exitosamente</response>
+        /// <returns>Informacion basica de la API</returns>
+        /// <response code="200">Informacion de la API obtenida exitosamente</response>
         [HttpGet("info")]
-        [SwaggerOperation(Summary = "Información de la API", Description = "Obtiene información general sobre la API y sus capabilities")]
+        [SwaggerOperation(Summary = "Informacion de la API", Description = "Obtiene informacion general sobre la API y sus capabilities")]
         [ProducesResponseType(typeof(object), 200)]
         public ActionResult GetInfo()
         {
@@ -107,7 +107,7 @@ namespace APIColegio.Controllers
             {
                 Name = "API Colegio",
                 Version = "1.0.0",
-                Description = "API RESTful para gestión de alumnos del colegio",
+                Description = "API RESTful para gestion de alumnos del colegio",
                 AuthenticationRequired = true,
                 ApiKeyHeader = "X-API-Key",
                 DefaultApiKey = "colegio-api-key-2024",
@@ -118,7 +118,7 @@ namespace APIColegio.Controllers
                     new { Method = "GET", Path = "/api/alumnos/grado/{grado}", Description = "Obtener alumnos por grado", Auth = true },
                     new { Method = "POST", Path = "/api/alumnos", Description = "Crear nuevo alumno", Auth = true },
                     new { Method = "GET", Path = "/api/health", Description = "Health check", Auth = false },
-                    new { Method = "GET", Path = "/api/health/info", Description = "Información de la API", Auth = false }
+                    new { Method = "GET", Path = "/api/health/info", Description = "Informacion de la API", Auth = false }
                 },
                 Documentation = "/swagger",
                 Repository = "https://github.com/tu-usuario/api-colegio",
@@ -134,18 +134,18 @@ namespace APIColegio.Controllers
         /// Verificar conectividad con servicios externos
         /// </summary>
         /// <remarks>
-        /// Verifica la conectividad con servicios críticos como la base de datos.
+        /// Verifica la conectividad con servicios criticos como la base de datos.
         /// 
         /// **Servicios verificados:**
-        /// - Conexión a PostgreSQL
+        /// - Conexion a PostgreSQL
         /// - Estado de Entity Framework
         /// - Disponibilidad de servicios registrados
         /// 
-        /// Este endpoint es útil para diagnósticos profundos del sistema.
+        /// Este endpoint es util para diagnosticos profundos del sistema.
         /// </remarks>
         /// <returns>Estado detallado de conectividad</returns>
-        /// <response code="200">Verificación completada</response>
-        /// <response code="503">Uno o más servicios no están disponibles</response>
+        /// <response code="200">Verificacion completada</response>
+        /// <response code="503">Uno o mas servicios no estan disponibles</response>
         [HttpGet("detailed")]
         [SwaggerOperation(Summary = "Health Check Detallado", Description = "Verifica la conectividad con servicios externos")]
         [ProducesResponseType(typeof(object), 200)]
@@ -166,7 +166,7 @@ namespace APIColegio.Controllers
                     {
                         Service = "PostgreSQL Database",
                         Status = canConnect ? "Healthy" : "Unhealthy",
-                        Details = canConnect ? "Conexión exitosa" : "No se puede conectar"
+                        Details = canConnect ? "Conexion exitosa" : "No se puede conectar"
                     });
                     if (!canConnect) overallHealthy = false;
                 }
