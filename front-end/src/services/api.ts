@@ -3,18 +3,14 @@ import type { Alumno, CreateAlumnoDto } from "../types/alumno";
 import { CONFIG } from "../config/constants";
 
 const API_BASE_URL = CONFIG.API_BASE_URL;
-const API_KEY = CONFIG.API_KEY;
+const API_TOKEN = CONFIG.API_TOKEN;
 
 // Configuración de axios con interceptores para manejo de errores
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "X-API-Key": API_KEY, // Ajusta según como implementaste la autenticación
-  },
-  // Configuración para ignorar certificados SSL en desarrollo
-  httpsAgent: {
-    rejectUnauthorized: false,
+    Authorization: `Bearer ${API_TOKEN}`, // Autenticación con Bearer token
   },
 });
 
