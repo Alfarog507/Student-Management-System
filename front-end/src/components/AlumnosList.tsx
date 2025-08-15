@@ -1,222 +1,382 @@
-import { useState, useEffect } from "react";
-import type { Alumno } from "../types/alumno";
+import React, { useState, useEffect } from "react";
 import { alumnosService } from "../services/api";
-import { formatDate } from "../config/constants";
+import type { Alumno } from "../types/alumno";
 import LoadingSpinner from "./LoadingSpinner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RefreshCw, Users, Search, Filter } from "lucide-react";
+import StudentModal from "./AlumnoModal";
+import { EyeIcon } from "lucide-react";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
 
-const AlumnosList = () => {
+const AlumnosList: React.FC = () => {
   const [alumnos, setAlumnos] = useState<Alumno[]>([]);
-  const [gradosDisponibles, setGradosDisponibles] = useState<string[]>([]);
-  const [filtroGrado, setFiltroGrado] = useState<string | undefined>(undefined);
-  const [busqueda, setBusqueda] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [grados, setGrados] = useState<string[]>([]);
+  const [secciones, setSecciones] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filtroId, setFiltroId] = useState("");
+  const [filtroGrado, setFiltroGrado] = useState<string | null>(null);
+  const [filtroSeccion, setFiltroSeccion] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [selectedAlumno, setSelectedAlumno] = useState<Alumno | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const itemsPerPage = 10;
 
-  const cargarGrados = async () => {
-    try {
-      const grados = await alumnosService.getGrados();
-      setGradosDisponibles(grados);
-    } catch (err) {
-      console.error("Error al cargar grados:", err);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const alumnosData = await alumnosService.getAlumnos();
+        setAlumnos(alumnosData);
+        setTotalItems(alumnosData.length);
 
-  const cargarAlumnos = async () => {
+        const gradosData = await alumnosService.getGrados();
+        setGrados(gradosData);
+
+        const seccionesData = await alumnosService.getSecciones();
+        setSecciones(seccionesData);
+      } catch (error) {
+        console.error("Error al cargar datos", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSearch = async () => {
     setLoading(true);
-    setError("");
     try {
-      const data = filtroGrado
-        ? await alumnosService.getAlumnosByGrado(filtroGrado)
-        : await alumnosService.getAlumnos();
-      setAlumnos(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Error al cargar los alumnos"
-      );
-      console.error(err);
+      let filteredAlumnos;
+
+      if (filtroGrado !== null) {
+        filteredAlumnos = await alumnosService.getAlumnosByGrado(filtroGrado);
+      } else {
+        filteredAlumnos = await alumnosService.getAlumnos();
+      }
+
+      // Filtro adicional por ID y sección si es necesario
+      if (filtroId) {
+        filteredAlumnos = filteredAlumnos.filter((a: Alumno) =>
+          a.id.toString().includes(filtroId)
+        );
+      }
+
+      if (filtroSeccion !== null) {
+        filteredAlumnos = filteredAlumnos.filter(
+          (a: Alumno) => a.seccion === filtroSeccion
+        );
+      }
+
+      setAlumnos(filteredAlumnos);
+      setTotalItems(filteredAlumnos.length);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Error al filtrar", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    cargarGrados();
-  }, []);
+  const handleVerTodos = async () => {
+    setFiltroId("");
+    setFiltroGrado(null);
+    setFiltroSeccion(null);
+    setLoading(true);
+    try {
+      const alumnosData = await alumnosService.getAlumnos();
+      setAlumnos(alumnosData);
+      setTotalItems(alumnosData.length);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Error al cargar todos los alumnos", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => {
-    cargarAlumnos();
-  }, [filtroGrado]); // eslint-disable-line react-hooks/exhaustive-deps
+  const handleVerDetalles = (alumno: Alumno) => {
+    setSelectedAlumno(alumno);
+    setIsModalOpen(true);
+  };
 
-  // Filtrar alumnos por búsqueda
-  const alumnosFiltrados = alumnos.filter(
-    (alumno) =>
-      alumno.nombreAlumno.toLowerCase().includes(busqueda.toLowerCase()) ||
-      alumno.nombrePadre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      alumno.nombreMadre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      alumno.grado.toLowerCase().includes(busqueda.toLowerCase()) ||
-      alumno.seccion.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedAlumno(null);
+  };
+
+  // Cálculos para paginación
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedAlumnos = alumnos.slice(startIndex, startIndex + itemsPerPage);
+
+  // Función para obtener iniciales del nombre
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+  };
 
   if (loading) {
-    return <LoadingSpinner message="Cargando lista de alumnos..." />;
+    return <LoadingSpinner />;
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <CardTitle className="flex items-center gap-2 text-2xl">
-            <Users className="h-6 w-6" />
-            Lista de Alumnos
-          </CardTitle>
-          <Button onClick={cargarAlumnos} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Actualizar
-          </Button>
-        </div>
-      </CardHeader>
+    <main className="flex-1 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Sección de filtros */}
+        <div className="bg-white rounded-xl mb-8 shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold mb-6">Filtros de Búsqueda</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="space-y-2">
+              <Label
+                htmlFor="filtroId"
+                className="block text-sm font-medium text-gray-700"
+              >
+                ID Alumno
+              </Label>
+              <Input
+                id="filtroId"
+                type="text"
+                placeholder="Buscar por ID"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={filtroId}
+                onChange={(e) => setFiltroId(e.target.value)}
+              />
+            </div>
 
-      <CardContent>
-        {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {/* Filtros */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <Label
-              htmlFor="busqueda"
-              className="text-sm font-medium mb-2 flex items-center gap-2"
-            >
-              <Search className="h-4 w-4" />
-              Buscar alumno
-            </Label>
-            <Input
-              id="busqueda"
-              placeholder="Buscar por nombre, padre, madre, grado o sección..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </div>
-
-          <div className="sm:w-48">
-            <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Filtrar por grado
-            </Label>
-            <Select
-              value={filtroGrado || "all"}
-              onValueChange={(value) =>
-                setFiltroGrado(value === "all" ? undefined : value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todos los grados" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los grados</SelectItem>
-                {gradosDisponibles.map((grado) => (
-                  <SelectItem key={grado} value={grado}>
-                    {grado}
-                  </SelectItem>
+            <div className="space-y-2">
+              <Label
+                htmlFor="filtroGrado"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Grado
+              </Label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                value={filtroGrado || ""}
+                onChange={(e) =>
+                  setFiltroGrado(e.target.value ? e.target.value : null)
+                }
+              >
+                <option value="">Todos los grados</option>
+                {grados.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
                 ))}
-              </SelectContent>
-            </Select>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="filtroSeccion"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Sección
+              </Label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                value={filtroSeccion || ""}
+                onChange={(e) =>
+                  setFiltroSeccion(e.target.value ? e.target.value : null)
+                }
+              >
+                <option value="">Todas las secciones</option>
+                {secciones.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-end gap-3">
+              <Button
+                onClick={handleSearch}
+                className="flex-1 bg-gray-900 text-white hover:bg-gray-800 transition-colors px-4 py-5 rounded-md font-medium cursor-pointer"
+              >
+                Buscar
+              </Button>
+              <Button
+                type="button"
+                className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors px-4 py-5 rounded-md font-medium cursor-pointer"
+                onClick={handleVerTodos}
+              >
+                Ver Todos
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Tabla */}
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Fecha Nac.</TableHead>
-                <TableHead>Padre</TableHead>
-                <TableHead>Madre</TableHead>
-                <TableHead>Grado</TableHead>
-                <TableHead>Sección</TableHead>
-                <TableHead>Fecha Ingreso</TableHead>
-                <TableHead>Edad</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {alumnosFiltrados.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    {busqueda
-                      ? `No se encontraron alumnos que coincidan con "${busqueda}"`
-                      : filtroGrado
-                      ? `No se encontraron alumnos en el grado ${filtroGrado}`
-                      : "No hay alumnos registrados"}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                alumnosFiltrados.map((alumno) => (
-                  <TableRow key={alumno.id} className="hover:bg-muted/50">
-                    <TableCell className="font-medium">
-                      {alumno.nombreAlumno}
-                    </TableCell>
-                    <TableCell>{formatDate(alumno.fechaNacimiento)}</TableCell>
-                    <TableCell>{alumno.nombrePadre}</TableCell>
-                    <TableCell>{alumno.nombreMadre}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{alumno.grado}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">Sección {alumno.seccion}</Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(alumno.fechaIngreso)}</TableCell>
-                    <TableCell>
-                      <Badge variant="default">{alumno.edad} años</Badge>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Estadísticas */}
-        {alumnosFiltrados.length > 0 && (
-          <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold">Total de alumnos mostrados:</span>{" "}
-              {alumnosFiltrados.length}
-              {busqueda && <span> (filtrados por "{busqueda}")</span>}
-              {filtroGrado && <span> en grado {filtroGrado}</span>}
+        {/* Lista de alumnos */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Lista de Alumnos
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Gestiona la información de los estudiantes
             </p>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Alumno
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Edad
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Grado Completo
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fecha Ingreso
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {paginatedAlumnos.map((alumno) => {
+                  const initials = getInitials(alumno.nombreAlumno);
+                  const gradoCompleto = `${alumno.grado} ${alumno.seccion}`;
+
+                  return (
+                    <tr
+                      key={alumno.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+                        {String(alumno.id).padStart(3, "0")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                            <span className="text-xs font-medium text-gray-700">
+                              {initials}
+                            </span>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {alumno.nombreAlumno}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {`${alumno.nombreAlumno
+                                .toLowerCase()
+                                .replace(/\s+/g, ".")}@email.com`}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                          {alumno.edad} años
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                        {gradoCompleto}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                        {new Date(alumno.fechaIngreso).toLocaleDateString(
+                          "es-ES"
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Button
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+                          onClick={() => handleVerDetalles(alumno)}
+                        >
+                          <EyeIcon size={16} className="mr-2" />
+                          Ver
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginación */}
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+            <div>
+              <p className="text-sm text-gray-700">
+                <span className="font-medium">{totalItems}</span> resultados
+              </p>
+            </div>
+            <div>
+              <nav className="inline-flex -space-x-px rounded-md shadow-sm">
+                <Button
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="15,18 9,12 15,6" />
+                  </svg>
+                </Button>
+                <Button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-900 text-sm font-medium text-white">
+                  {currentPage}
+                </Button>
+                <Button
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
+                  onClick={() =>
+                    setCurrentPage((p) =>
+                      Math.min(Math.ceil(totalItems / itemsPerPage), p + 1)
+                    )
+                  }
+                  disabled={
+                    currentPage === Math.ceil(totalItems / itemsPerPage)
+                  }
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="9,18 15,12 9,6" />
+                  </svg>
+                </Button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal de detalles del alumno */}
+      <StudentModal
+        alumno={selectedAlumno}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+    </main>
   );
 };
 

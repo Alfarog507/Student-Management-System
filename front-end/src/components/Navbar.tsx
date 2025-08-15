@@ -1,45 +1,59 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { List, UserPlus, GraduationCap } from "lucide-react";
 
 interface NavbarProps {
-  onNuevoAlumno?: () => void;
+  onNuevoAlumno: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onNuevoAlumno }) => {
   return (
-    <Card className="rounded-none border-x-0 border-t-0 bg-primary text-primary-foreground shadow-md">
-      <div className="container mx-auto p-4">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <h1 className="text-2xl font-bold flex items-center gap-3">
-            <GraduationCap className="h-8 w-8" />
-            Sistema de Gestión de Alumnos
-          </h1>
+    <header className="bg-white dark:bg-gray-300 border-b border-neutral-200 dark:border-neutral-200">
+      <div className="mx-auto px-4 lg:px-6 container">
+        <div className="items-center justify-between h-14 flex">
+          <div className="items-center flex gap-6">
+            <div className="items-center flex gap-2">
+              <div className="w-8 h-8 bg-neutral-900 dark:bg-neutral-100 rounded-md items-center justify-center flex">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-white dark:text-neutral-900"
+                  id="Windframe_Hhf3TZPmw"
+                >
+                  {" "}
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />{" "}
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />{" "}
+                </svg>
+              </div>
+              <p className="font-semibold text-lg">Sistema Escolar</p>
+            </div>
 
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              <List className="h-4 w-4 mr-2" />
-              Lista de Alumnos
-            </Button>
-
-            <Button
-              onClick={onNuevoAlumno}
-              variant="secondary"
-              size="sm"
-              className="shadow-lg"
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              Agregar Alumno
-            </Button>
+            <nav className="flex items-center">
+              <div className="flex items-center bg-gray-100 rounded-lg p-1 space-x-1">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm border border-gray-200"
+                >
+                  Alumnos
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 cursor-pointer"
+                  onClick={onNuevoAlumno}
+                >
+                  Crear
+                </button>
+              </div>
+            </nav>
           </div>
         </div>
       </div>
-    </Card>
+    </header>
   );
 };
 

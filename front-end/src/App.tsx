@@ -2,12 +2,12 @@ import { useState } from "react";
 import Navbar from "./components/Navbar";
 import AlumnosList from "./components/AlumnosList";
 import AlumnoForm from "./components/AlumnoForm";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import "./App.css";
+import { Dialog, DialogContent } from "./components/ui/dialog";
+import { Toaster } from "sonner";
 
 function App() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [shouldRefreshList, setShouldRefreshList] = useState<number>(0);
+  const [shouldRefreshList, setShouldRefreshList] = useState(0);
 
   const handleNuevoAlumno = () => {
     setMostrarFormulario(true);
@@ -15,7 +15,7 @@ function App() {
 
   const handleFormSuccess = () => {
     setMostrarFormulario(false);
-    setShouldRefreshList((prev) => prev + 1); // Trigger refresh
+    setShouldRefreshList((prev) => prev + 1);
   };
 
   const handleFormCancel = () => {
@@ -23,21 +23,20 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col">
       <Navbar onNuevoAlumno={handleNuevoAlumno} />
-
-      <div className="container mx-auto p-6">
-        <AlumnosList key={shouldRefreshList} />
-      </div>
+      <AlumnosList key={shouldRefreshList} />
 
       <Dialog open={mostrarFormulario} onOpenChange={setMostrarFormulario}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="">
           <AlumnoForm
             onSuccess={handleFormSuccess}
             onCancel={handleFormCancel}
           />
         </DialogContent>
       </Dialog>
+
+      <Toaster position="top-right" expand={true} richColors closeButton />
     </div>
   );
 }
