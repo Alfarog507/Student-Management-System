@@ -1,174 +1,178 @@
-# Sistema de Gestión de Alumnos - Frontend
+# 🎯 Frontend - Sistema de Gestión de Alumnos
 
-Sistema web moderno desarrollado con **React + TypeScript + Vite + shadcn/ui** para la gestión de alumnos de un colegio.
+Frontend moderno desarrollado con **React + TypeScript + Vite + Shadcn/ui** para el sistema de gestión de alumnos del colegio.
 
-## 🚀 Funcionalidades
+## 🚀 Funcionalidades Implementadas
 
-### ✅ Implementadas
+### ✅ Gestión Completa de Alumnos
 
-- **📋 Lista de Alumnos**: Visualización elegante en tabla con shadcn/ui
-- **🔍 Filtros Avanzados**:
-  - Filtro dinámico por grado con select componente
-  - Búsqueda en tiempo real por nombre, padre, madre, grado o sección
-- **➕ Crear Alumno**: Formulario modal con validación robusta usando react-hook-form + zod
-- **📊 Estadísticas**: Contador dinámico de alumnos y filtros aplicados
-- **🔄 Actualización en tiempo real**: Recarga automática de datos
-- **📱 Responsive**: Diseño completamente adaptable
-- **🎨 UI Moderna**: Interfaz profesional con shadcn/ui y lucide-react icons
+- **📋 Lista de Alumnos**: Visualización elegante en tabla responsiva
+- **🔍 Filtros Avanzados**: Búsqueda en tiempo real y filtro por grado
+- **➕ Crear Alumno**: Formulario modal con validación robusta
+- **✏️ Editar Alumno**: Formulario de edición con datos precargados
+- **�️ Eliminar Alumno**: Confirmación antes de eliminar
+- **� Estadísticas**: Contador dinámico de alumnos
+- **🎨 Notificaciones**: Sistema de toast con Sonner
 
-### 🔧 Características Técnicas Mejoradas
+### 🔧 Características Técnicas
 
 - **TypeScript**: Tipado estático para mayor seguridad
-- **shadcn/ui**: Sistema de componentes moderno y accesible
-- **Tailwind CSS**: Diseño utility-first con tema consistente
-- **react-hook-form**: Manejo avanzado de formularios con validación
-- **Zod**: Validación de esquemas TypeScript-first
-- **lucide-react**: Iconos modernos y escalables
-- **Modal Dialog**: Formulario en modal para mejor UX
-- **Validación en tiempo real**: Feedback inmediato al usuario
+- **Shadcn/ui**: Sistema de componentes moderno y accesible
+- **Tailwind CSS**: Diseño utility-first responsivo
+- **React Hook Form + Zod**: Validación de formularios avanzada
+- **Sonner**: Sistema de notificaciones toast
+- **Lucide React**: Iconografía moderna y escalable
 
-### 🎨 Mejoras de UI/UX
+## 🛠️ Stack Tecnológico
 
-- **Componentes shadcn/ui**:
-  - Table, Button, Input, Select, Dialog, Card, Badge, Alert
-  - Form components con validación integrada
-  - Consistent design tokens
-- **Iconos lucide-react**: Iconos profesionales y escalables
-- **Modal para formularios**: Mejor flujo de trabajo
-- **Badges**: Visualización elegante de grado, sección y edad
-- **Estados de carga**: Spinners y estados disabled apropiados
-- **Alertas mejoradas**: Componentes de error más elegantes
+### Core Framework
 
-## 🛠️ Tecnologías
+- **React 19** - Biblioteca de UI moderna
+- **TypeScript** - Tipado estático y desarrollo seguro
+- **Vite** - Build tool rápido y servidor de desarrollo
+- **Tailwind CSS** - Framework CSS utility-first
 
-### Core
+### UI & Components
 
-- **React 18** con hooks
-- **TypeScript** para tipado estático
-- **Vite** como bundler y servidor de desarrollo
-- **Tailwind CSS** para estilos
+- **Shadcn/ui** - Sistema de componentes moderno
+- **Radix UI** - Primitivos accesibles
+- **Lucide React** - Iconos SVG escalables
+- **Sonner** - Sistema de notificaciones toast
 
-### UI Components
+### Formularios & Validación
 
-- **shadcn/ui** - Sistema de componentes moderno
-- **lucide-react** - Iconos escalables
-- **Radix UI** - Primitivos accesibles (via shadcn/ui)
-
-### Forms & Validation
-
-- **react-hook-form** - Manejo de formularios
+- **React Hook Form** - Manejo performante de formularios
+- **Zod** - Validación de esquemas TypeScript-first
 - **@hookform/resolvers** - Integración con validadores
-- **zod** - Validación de esquemas
 
-### HTTP Client
+### HTTP & Estado
 
-- **Axios** para peticiones HTTP
+- **Axios** - Cliente HTTP con interceptores
 
-## 🔗 Endpoints de API
+## ⚙️ Instalación y Configuración
 
-El frontend consume los siguientes endpoints:
+### Prerrequisitos
 
-```
-GET    /api/Alumnos?orderBy=id          - Listar todos los alumnos
-GET    /api/Alumnos/grado/{grado}       - Obtener alumnos por grado
-GET    /api/Alumnos/{id}                - Obtener alumno por ID
-POST   /api/Alumnos                     - Crear nuevo alumno
-GET    /api/Alumnos/grados              - Obtener lista de grados
-GET    /api/Alumnos/secciones           - Obtener lista de secciones
-```
-
-## ⚙️ Configuración
+- Node.js 18 o superior
+- npm o yarn
+- Backend API ejecutándose en puerto 8080
 
 ### Variables de Entorno
 
-Crear un archivo `.env` en la raíz del proyecto:
+Crear archivo `.env.local`:
 
 ```bash
-# Configuración de la API
 VITE_API_BASE_URL=http://localhost:8080/api
 VITE_API_TOKEN=colegio-api-key-2025
 ```
 
-### Instalación
+### Comandos de Desarrollo
 
 ```bash
 # Instalar dependencias
 npm install
 
-# Ejecutar en desarrollo
+# Servidor de desarrollo
 npm run dev
 
-# Compilar para producción
+# Build de producción
 npm run build
 
-# Vista previa de producción
+# Preview del build
 npm run preview
+
+# Linting
+npm run lint
 ```
 
-## 📋 Estructura del Proyecto
+## 🐳 Docker
+
+### Construir imagen
+
+```bash
+docker build -t frontend-alumnos .
+```
+
+### Ejecutar contenedor
+
+```bash
+docker run -p 3000:80 frontend-alumnos
+```
+
+## � Estructura del Proyecto
 
 ```
 src/
 ├── components/           # Componentes React
-│   ├── ui/              # Componentes shadcn/ui
-│   │   ├── table.tsx    # Componente tabla
-│   │   ├── button.tsx   # Componente botón
-│   │   ├── input.tsx    # Componente input
-│   │   ├── select.tsx   # Componente select
-│   │   ├── dialog.tsx   # Componente modal
-│   │   ├── card.tsx     # Componente tarjeta
-│   │   ├── badge.tsx    # Componente badge
-│   │   ├── alert.tsx    # Componente alerta
-│   │   └── form.tsx     # Componentes de formulario
-│   ├── AlumnosList.tsx  # Lista principal con filtros
-│   ├── AlumnoForm.tsx   # Formulario con validación
-│   ├── Navbar.tsx       # Barra de navegación moderna
-│   ├── Alert.tsx        # Componente de alertas (legacy)
-│   └── LoadingSpinner.tsx # Indicador de carga
-├── lib/                 # Utilidades
-│   └── utils.ts         # Funciones utilitarias shadcn/ui
+│   ├── ui/              # Componentes Shadcn/ui
+│   │   ├── button.tsx   # Botones reutilizables
+│   │   ├── input.tsx    # Campos de entrada
+│   │   ├── dialog.tsx   # Modales y diálogos
+│   │   ├── table.tsx    # Tablas responsivas
+│   │   └── ...          # Otros componentes base
+│   ├── AlumnoForm.tsx   # Formulario de alumnos
+│   ├── AlumnosList.tsx  # Lista y tabla de alumnos
+│   ├── AlumnoModal.tsx  # Modal para CRUD
+│   ├── Navbar.tsx       # Barra de navegación
+│   └── ToastExamples.tsx # Ejemplos de notificaciones
 ├── services/            # Servicios de API
-│   └── api.ts          # Cliente de API con Axios
-├── types/              # Definiciones de TypeScript
-│   └── alumno.ts       # Interfaces y tipos
-├── config/             # Configuración
-│   └── constants.ts    # Constantes y utilidades
-├── components.json     # Configuración shadcn/ui
-└── App.tsx             # Componente principal
+│   └── api.ts          # Cliente HTTP con Axios
+├── types/              # Definiciones TypeScript
+│   └── alumno.ts       # Interfaces del dominio
+├── lib/                # Utilidades
+│   └── utils.ts        # Helpers y funciones utilitarias
+├── config/             # Configuraciones
+│   └── constants.ts    # Constantes globales
+└── assets/             # Recursos estáticos
 ```
 
-## 🎨 Diseño
+## 🔗 API Endpoints
 
-### Sistema de Colores (shadcn/ui)
+```bash
+GET    /api/Alumnos              # Listar todos los alumnos
+GET    /api/Alumnos/{id}         # Obtener alumno por ID
+POST   /api/Alumnos              # Crear nuevo alumno
+PUT    /api/Alumnos/{id}         # Actualizar alumno
+DELETE /api/Alumnos/{id}         # Eliminar alumno
+GET    /api/Alumnos/grado/{grado} # Filtrar por grado
+```
 
-- **Primary**: Azul profesional para elementos principales
-- **Secondary**: Gris neutro para elementos secundarios
-- **Destructive**: Rojo para alertas y errores
-- **Muted**: Gris suave para texto secundario
-- **Border**: Bordes sutiles y consistentes
+## 🎨 Componentes Principales
 
-### Componentes UI
+### AlumnoForm
 
-- **Table**: Tabla elegante con hover states
-- **Badges**: Para grado, sección y edad con colores distintivos
-- **Modal Dialog**: Formulario en modal con backdrop
-- **Buttons**: Variantes primary, secondary, outline, ghost
-- **Form Fields**: Con validación visual integrada
+Formulario con validación completa usando React Hook Form + Zod
 
-### Iconos
+- Validación en tiempo real
+- Manejo de errores elegante
+- Campos obligatorios marcados
 
-- **lucide-react**: Librería moderna de iconos SVG
-- **Consistencia**: Iconos coherentes en toda la aplicación
-- **Accesibilidad**: Iconos con labels apropiados
+### AlumnosList
 
-## 🔐 Autenticación
+Tabla responsiva con funcionalidades avanzadas
 
-La aplicación utiliza autenticación por API Key:
+- Filtros por grado y búsqueda
+- Acciones CRUD integradas
+- Estados de carga y error
 
-- **Header**: `X-API-Key: colegio-api-key-2025`
-- **Configuración**: Via variables de entorno o valor por defecto
+### AlumnoModal
+
+Modal reutilizable para operaciones CRUD
+
+- Apertura/cierre fluido
+- Formulario integrado
+- Confirmaciones de eliminación
+
+## 📱 Responsive Design
+
+- **Mobile First**: Diseño optimizado para móviles
+- **Breakpoints**: sm, md, lg, xl configurados
+- **Componentes Flexibles**: Adaptación automática
+- **Touch Friendly**: Botones y elementos táctiles
 
 ## 📝 Esquema de Validación
+
+## 📝 Esquemas de Validación
 
 ### Validación con Zod
 
@@ -176,35 +180,25 @@ La aplicación utiliza autenticación por API Key:
 const alumnoSchema = z.object({
   nombreAlumno: z
     .string()
-    .min(2, "El nombre debe tener al menos 2 caracteres")
-    .max(100, "El nombre no puede exceder 100 caracteres"),
+    .min(2, "Mínimo 2 caracteres")
+    .max(100, "Máximo 100 caracteres"),
   fechaNacimiento: z
     .string()
-    .min(1, "La fecha de nacimiento es requerida")
+    .min(1, "Campo requerido")
     .refine((date) => {
-      const fechaNac = new Date(date);
-      const hoy = new Date();
-      const edad = hoy.getFullYear() - fechaNac.getFullYear();
+      const edad = calcularEdad(new Date(date));
       return edad >= 3 && edad <= 18;
-    }, "La edad debe estar entre 3 y 18 años"),
-  nombrePadre: z
-    .string()
-    .min(2, "El nombre del padre debe tener al menos 2 caracteres")
-    .max(100, "El nombre no puede exceder 100 caracteres"),
-  nombreMadre: z
-    .string()
-    .min(2, "El nombre de la madre debe tener al menos 2 caracteres")
-    .max(100, "El nombre no puede exceder 100 caracteres"),
-  grado: z.string().min(1, "Debe seleccionar un grado"),
-  seccion: z.string().min(1, "Debe seleccionar una sección"),
+    }, "Edad debe estar entre 3 y 18 años"),
+  nombrePadre: z.string().min(2).max(100),
+  nombreMadre: z.string().min(2).max(100),
+  grado: z.string().min(1, "Seleccione un grado"),
+  seccion: z.string().min(1, "Seleccione una sección"),
   fechaIngreso: z
     .string()
-    .min(1, "La fecha de ingreso es requerida")
-    .refine((date) => {
-      const fechaIngreso = new Date(date);
-      const hoy = new Date();
-      return fechaIngreso <= hoy;
-    }, "La fecha de ingreso no puede ser futura"),
+    .refine(
+      (date) => new Date(date) <= new Date(),
+      "No puede ser fecha futura"
+    ),
 });
 ```
 
@@ -223,9 +217,38 @@ interface Alumno {
   edad: number;
   gradoCompleto: string;
 }
-
-type FormData = z.infer<typeof alumnoSchema>;
 ```
+
+## 🌐 URLs del Sistema
+
+- **Desarrollo**: http://localhost:5173
+- **Producción (Docker)**: http://localhost:3000
+- **API Backend**: http://localhost:8080
+
+## 📦 Scripts Disponibles
+
+```bash
+npm run dev      # Servidor de desarrollo (Vite)
+npm run build    # Build optimizado para producción
+npm run preview  # Preview del build de producción
+npm run lint     # Análisis de código con ESLint
+```
+
+## 🚀 Características Destacadas
+
+- ✅ **UI Moderna**: Componentes Shadcn/ui profesionales
+- ✅ **Validación Robusta**: React Hook Form + Zod
+- ✅ **Notificaciones**: Sistema toast con Sonner
+- ✅ **Responsive**: Adaptable a todos los dispositivos
+- ✅ **TypeScript**: Tipado completo y seguro
+- ✅ **Performance**: Build optimizado con Vite
+- ✅ **Accesibilidad**: Componentes accesibles con Radix UI
+- ✅ **Dockerizado**: Contenedor listo para producción
+
+---
+
+**Desarrollado con ❤️ por Gabriel Alfaro**  
+_Stack: React 19 + TypeScript + Vite + Shadcn/ui + Tailwind CSS_
 
 ## 🌐 URLs del Sistema
 
